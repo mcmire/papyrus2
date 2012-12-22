@@ -1,0 +1,78 @@
+***************
+*** 9,39 ****
+    class CustomCommandSet
+      class << self
+        def commands
+-         @commands ||= Hash.new {|h,k| h[k] = Hash.new }
+        end
+  
+        def aliases
+-         @aliases ||= Hash.new
+        end
+        
+-       # Use this to define your inline commands instead of the usual def..end. This
+-       # is to allow you to have other (helper or such) methods in your class without
+-       # those being considered when a command is evaluated.
+-       def define_inline_command(name, options={}, &block)
+-         define_command(:inline, name, options, &block)
+        end
+        
+-       # Use this to define your block commands instead of the usual def..end. This
+-       # is to allow you to have other (helper or such) methods in your class without
+-       # those being considered when a command is evaluated.
+-       def define_block_command(name, options={}, &block)
+-         define_command(:block, name, options, &block)
+-       end
+-       
+-       def alias_command(name, alias_name)
+-         aliases[alias_name.to_s.downcase] = name.to_s.downcase
+-       end
+-       
+        def get(type, name)
+          # When getting a command, first check if the name is an alias for a different command
+          commands[type][aliases[name.to_s.downcase] || name.to_s.downcase]
+--- 9,32 ----
+    class CustomCommandSet
+      class << self
+        def commands
++         @commands ||= {}
+        end
+  
+        def aliases
++         @aliases ||= {}
+        end
+        
++       def inline_commands(&block)
++         mod = Module.new
++         mod.extend(CommandModuleMethods)
++         mod.module_eval(&block)
++         include mod
++         @inline_command_modules << mod
++         mod.instance_methods(false).each do |method_name|
++           add_command :inline, method_name
++         end
+        end
+        
+        def get(type, name)
+          # When getting a command, first check if the name is an alias for a different command
+          commands[type][aliases[name.to_s.downcase] || name.to_s.downcase]
+***************
+*** 50,60 ****
+        def has_block_command?(name)
+          !!get(:block, name)
+        end
+-       
+-     private
+-       def define_command(type, name, options, &block)
+-         set(type, name, options.merge(:block => block))
+-       end
+      end
+      
+      attr_reader :template, :args, :inner
+--- 43,48 ----
+        def has_block_command?(name)
+          !!get(:block, name)
+        end
+      end
+      
+      attr_reader :template, :args, :inner
