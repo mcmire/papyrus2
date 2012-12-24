@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+# TODO
+
+require 'erb'
+
+class Main
+  def initialize
+    _parse_args(ARGV)
+  end
+
+  def set(name, value)
+    @values[name] = value
+  end
+
+  def run
+    if has?('rbenv')
+      install_from_template 'rbenv_version.erb', '.rbenv_version',
+        :ruby_version => RUBY_VERSION
+    elsif has?('rvm')
+      install_from_template 'rvmrc.erb', '.rvmrc',
+        :ruby_version => RUBY_VERSION
+    end
+
+    puts "Installing dependencies..."
+    system('bundle install --quiet')
+  end
+
+def has?(executable)
+  !`which executable`.chomp.to_s.empty?
+end
+
+def install_from_template(src, dest)
+  content = render(source_path(src))
+  dest_file = dest_path(dest)
+  if File.read(dest_file) != content
+end
+
+def install(content, file)
+
+end
+
+RUBY_VERSION = '1.9.3-p125'
+
