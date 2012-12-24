@@ -1,11 +1,12 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus::Sub do
-  
+
   before :each do
     @sub = Sub.new("", NodeList.new, [])
   end
-  
+
   describe '.new' do
     it "should set @name to the given name, case-insensitively" do
       Sub.new("trOgdoR", NodeList.new, []).ivg("@name").should == "trogdor"
@@ -24,13 +25,13 @@ describe Papyrus::Sub do
       Sub.new("", NodeList.new, tokens).ivg("@raw_tokens").should == tokens
     end
   end
-  
+
   describe '#dup or #clone (via #initialize_copy)' do
     it "should create a copy of the original sub's args" do
       args = NodeList.new([ Text.new("foo"), Text.new("bar") ])
       sub = Sub.new("", args, [])
       sub2 = sub.clone
-      
+
       sub2.args.should_not equal(sub.args)
       sub2.args << Text.new("baz")
       sub.args.should_not include(Text.new("baz"))
@@ -39,15 +40,15 @@ describe Papyrus::Sub do
       raw_tokens = TokenList[ "foo", "bar" ]
       sub = Sub.new("", NodeList.new, raw_tokens)
       sub2 = sub.clone
-      
+
       sub2.raw_tokens.should_not equal(sub.raw_tokens)
       sub2.raw_tokens << Token::Text.new("zing")
       sub.raw_tokens.should_not include(Token::Text.new("zing"))
     end
   end
-  
+
   #---
-  
+
   describe '#evaluate?' do
     it "should return false if any of this sub's ancestors are in the template's shielded commands list" do
       @sub.stub_methods(
@@ -69,23 +70,23 @@ describe Papyrus::Sub do
       @sub.evaluate?.should == true
     end
   end
-  
+
   describe '#raw_sub' do
     it "should return the stringified version of the raw TokenList" do
       sub = Sub.new("", NodeList.new, %w([ foo ]))
       sub.raw_sub.should == "[foo]"
     end
   end
-  
+
   describe '#insertion_parent' do
     it "should return nil if this sub doesn't have an old_parent" do
       @sub.stub_methods(:old_parent => nil)
       @sub.insertion_parent.should == nil
     end
     it "should return the sub that this sub replaced in the node tree, if this sub has an old_parent" do
-      @sub.stub_methods(:old_parent => 
-        stub(:template => 
-          stub(:parent => 
+      @sub.stub_methods(:old_parent =>
+        stub(:template =>
+          stub(:parent =>
             stub(:wrapper => :wrapper)
           )
         )
@@ -93,7 +94,7 @@ describe Papyrus::Sub do
       @sub.insertion_parent.should == :wrapper
     end
   end
-  
+
   describe '#insertion_doppelganger' do
     before do
       @sub = Sub.new("foo", NodeList.new, [])
@@ -145,7 +146,7 @@ describe Papyrus::Sub do
       @sub.insertion_doppelganger.should equal(sub4)
     end
   end
-  
+
   describe '#==' do
     it "should return false if the given object is not a Sub" do
       sub = Sub.new("foo", NodeList.new, [])
@@ -191,9 +192,9 @@ describe Papyrus::Sub do
       sub1.should == sub2
     end
   end
-  
+
   #---
-    
+
   describe '#command_allowed?' do
     it "should return true if no allowed commands were specified" do
       @sub.stub_methods(:template => Object.stub_instance(:allowed_commands => nil))
@@ -210,7 +211,7 @@ describe Papyrus::Sub do
       @sub.send(:command_allowed?).should == false
     end
   end
-  
+
   describe '#evaluates_as_variable?' do
     it "should return true if the sub has no arguments" do
       @sub.ivs "@args", NodeList.new
@@ -234,5 +235,5 @@ describe Papyrus::Sub do
     end
     # how do we add a test for setting wrapper?
   end
-  
+
 end

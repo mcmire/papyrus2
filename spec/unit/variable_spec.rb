@@ -1,15 +1,16 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus::Variable do
-  
-  before :each do 
+
+  before :each do
     @var = Variable.new("", [])
   end
-  
+
   it "should be an InsertionSub" do
     Variable.ancestors.should include(InsertionSub)
   end
-  
+
   describe '.new' do
     it "should store the given name, case-insensitively" do
       Variable.new("FooBaR", []).ivg("@name").should == "foobar"
@@ -18,7 +19,7 @@ describe Papyrus::Variable do
       Variable.new("", :tokens).ivg("@raw_tokens").should == :tokens
     end
   end
-  
+
   describe '#evaluate' do
     before do
       # stub this so it returns whatever's passed to it
@@ -57,7 +58,7 @@ describe Papyrus::Variable do
       @var.evaluate.should == "[foo]"
     end
   end
-  
+
   describe '#==' do
     it "should return true if the given object is a Variable and has the same name" do
       var = Variable.new("", [])
@@ -79,5 +80,5 @@ describe Papyrus::Variable do
       var.should_not == var2
     end
   end
-  
+
 end

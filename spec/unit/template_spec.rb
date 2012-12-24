@@ -1,4 +1,5 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 require 'tempfile'
 
@@ -10,8 +11,8 @@ class Template2 < Template
 end
 
 describe Papyrus::Template do
-  
-  before :each do 
+
+  before :each do
     @template = Template.new("")
   end
 
@@ -61,7 +62,7 @@ describe Papyrus::Template do
       template.ivg("@allowed_commands").should == %w(foo)
     end
   end
-  
+
   describe '#dup or #clone (via #initialize_copy)' do
     it "should make a shallow copy of the original template's options" do
       template2 = @template.clone
@@ -104,7 +105,7 @@ describe Papyrus::Template do
       template2.parser.template.should equal(template2)
     end
   end
-  
+
   describe '.render' do
     it "should replace subs in the given content and return the final content" do
       template = Template.new("")
@@ -113,9 +114,9 @@ describe Papyrus::Template do
       Template.render("the source content").should == "the rendered content"
     end
   end
-  
+
   #---
-  
+
   describe '#analyze' do
     it "should just call #tokenize and #parse" do
       @template.stub_methods(:tokenize => nil, :parse => nil)
@@ -124,7 +125,7 @@ describe Papyrus::Template do
       @template.should have_received(:parse)
     end
   end
-  
+
   describe '#render' do
     before :each do
       @template.stub_methods(:analyze => nil, :evaluate => nil, :process_bodies => nil)
@@ -155,7 +156,7 @@ describe Papyrus::Template do
       @template.render.should == "foobarbaz"
     end
   end
-  
+
   describe '#content=' do
     it "should store the given content straight if it is a StringScanner" do
       @template.content = StringScanner.new("this is not a sentence")
@@ -173,7 +174,7 @@ describe Papyrus::Template do
       @template.ivg("@results").should be_nil
     end
   end
-  
+
   describe '#clone_with' do
     it "should return a clone of the Template, with its content set to the given content" do
       template = Template.new("the content")
@@ -196,15 +197,15 @@ describe Papyrus::Template do
       template2.options[:foo].should == {:bar => 'baz'}
     end
   end
-  
+
   describe '#template' do
     it "should return itself" do
       @template.template.should == @template
     end
   end
-  
+
   #---
-  
+
   describe '#tokenize' do
     it "should create a new Tokenizer, run the content through it and return the generated token list" do
       # poor man's any_instance :(
@@ -214,7 +215,7 @@ describe Papyrus::Template do
       @template.send(:tokenize).should == :token_list
     end
   end
-  
+
   describe '#parse' do
     it "should create a new Parser, run the given token list through it and return the generated Document" do
       @template.ivs("@tokenizer", stub(:tokens => nil))
@@ -225,7 +226,7 @@ describe Papyrus::Template do
       @template.send(:parse).should == :document
     end
   end
-  
+
   describe '#evaluate' do
     it "should evaluate each node in the document and store an array (not a string) of results" do
       @template.ivs "@parser", stub("document.evaluate" => ["the results"])
@@ -233,7 +234,7 @@ describe Papyrus::Template do
       @template.ivg("@results").should == ["the results"]
     end
   end
-  
+
   describe '#process_bodies' do
     it "should run through BodyStrings found in the evaluation results and process them, if the Document has any BodyStrings and the process_body callback was supplied to the Template" do
       callback = lambda { 'processed body' }
@@ -250,5 +251,5 @@ describe Papyrus::Template do
       @template.ivg("@results").should == ['text', 'text', 'text']
     end
   end
-  
+
 end

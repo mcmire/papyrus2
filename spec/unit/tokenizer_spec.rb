@@ -1,17 +1,18 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus::Tokenizer do
-  
+
   before :each do
     @tokenizer = Tokenizer.new(nil)
   end
-  
+
   describe '.new' do
     it "should set @template to the given template" do
       Tokenizer.new(:template).ivg("@template").should == :template
     end
   end
-  
+
   # TODO: Do we need to test flush_stack and all that?
   describe '#tokenize' do
     describe 'outside a sub' do
@@ -109,5 +110,5 @@ describe Papyrus::Tokenizer do
       end
     end
   end
-  
+
 end

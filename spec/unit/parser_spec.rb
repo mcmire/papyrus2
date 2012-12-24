@@ -1,16 +1,17 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 class SomeBlockCommand < BlockCommand
 end
 
 describe Papyrus::Parser do
-  
+
   before :each do
     @parser = Parser.new(nil)
   end
-  
+
   it_should_delegate :options, :to => :@template, :from => Parser.new(nil)
-  
+
   describe '.new' do
     it "should set @template to the given template" do
       Parser.new(:template).ivg("@template").should == :template
@@ -22,21 +23,21 @@ describe Papyrus::Parser do
       @parser.ivg("@stack").first.should == @parser.ivg("@document")
     end
   end
-  
+
   #describe '#dup and #clone (via #initialize_copy)' do
   #  it "should make a copy of the Document" do
   #    parser2 = @parser.clone
   #    parser2.document.should_not equal(@parser.document)
   #  end
   #end
-  
+
   #describe '#document=' do
   #  it "should set the given document's parser to this parser" do
   #    @parser.document = Document.new(nil)
   #    @parser.document.parser.should == @parser
   #  end
   #end
-  
+
   describe '#tokens' do
     it "should be delegated to @template.tokenizer" do
       tokenizer = stub(:tokens => nil)
@@ -45,18 +46,18 @@ describe Papyrus::Parser do
       tokenizer.should have_received(:tokens)
     end
   end
-  
+
   describe '#parse' do
     it "should return the resulting Document" do
       @parser.stub_methods(:build_document => nil, :close_open_block_commands => nil)
       @parser.parse.should be_a(Document)
     end
   end
-  
+
   #---
-  
+
   describe '#build_document' do
-    before :each do 
+    before :each do
       @parser.stub_methods :tokens => TokenList.new
     end
     it "should reset @open_subs" do
@@ -86,7 +87,7 @@ describe Papyrus::Parser do
       @parser.ivg("@document").last.should == Text.new("foo")
     end
   end
-  
+
   describe '#close_open_block_commands' do
     it "should automatically close block commands that are still open at the end of the parsing process" do
       @parser.stub_methods :tokens => TokenList.new
@@ -98,7 +99,7 @@ describe Papyrus::Parser do
       stack[0].nodes[0].should == cmd
     end
   end
-  
+
   describe '#build_sub' do
     it "should delegate to #handle_command_close if the next token is a slash" do
       @parser.ivs "@head", stub(:curr => stub(:advance => nil, :next => Token::Slash.new))
@@ -162,7 +163,7 @@ describe Papyrus::Parser do
       @parser.send(:build_sub).should == Text.new("[bar]")
     end
   end
-  
+
   describe '#handle_command_close' do
     it "should raise an InvalidCloseSubError if the command name is not a Text token" do
       @parser.ivs "@head", TokenList[ Token::Slash.new, Token::RightBracket.new ]
@@ -212,7 +213,7 @@ describe Papyrus::Parser do
       lambda { @parser.send(:handle_command_close) }.should raise_error(UnmatchedLeftBracketError)
     end
   end
-  
+
   describe '#gather_sub_name_and_args' do
     before :each do
       @parser.stub_methods(:build_arg => nil, :build_sub => nil)
@@ -345,7 +346,7 @@ describe Papyrus::Parser do
       open_subs.should have_received(:pop)
     end
   end
-  
+
   describe '#build_arg' do
     before :each do
       @parser.ivs "@open_subs", []
@@ -524,5 +525,5 @@ describe Papyrus::Parser do
       @parser.send(:build_arg).parent.should == :outer_sub
     end
   end
-  
+
 end

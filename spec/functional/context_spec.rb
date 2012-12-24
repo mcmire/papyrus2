@@ -1,7 +1,8 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus do
-  
+
   # This probably won't work until we get real Commands going
   #it "should be able to refer to a variable in a parent context"
   #  template = Template.new(nil)
@@ -11,5 +12,5 @@ describe Papyrus do
   #  if_cmd << if_cmd2
   #  if_cmd2.active_block.get('foo').should == "bar"
   #end
-  
+
 end

@@ -1,7 +1,8 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe "When cloning template nodes" do
-  
+
   it "all the parent links of the cloned nodes should be pointed to other cloned nodes" do
     args3 = NodeList.new
     sub3 = Sub.new("baz", args3, [])
@@ -31,5 +32,5 @@ describe "When cloning template nodes" do
     args3p = sub3p.args
     args3p.parent.should equal(sub3p)
   end
-  
+
 end

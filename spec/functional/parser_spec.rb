@@ -1,36 +1,37 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 class CustomCommands < CustomCommandSet
   define_inline_command :frobulate do |args|
     "Jim #{args[0]}ed the #{args[1]}"
   end
-  
+
   define_inline_command :tribblize do |args|
     args[0].reverse
   end
-  
+
   define_inline_command :sproink do |args|
     args.reverse.join(" ")
   end
-  
+
   define_inline_command :zazzimmer do |args|
     command = args.shift
     send(command, args)
   end
-  
+
   define_inline_command(:picard) {|args| "Jean-Luc" }
-  
+
   define_inline_command(:enumerate) {|args| (1..5).to_a.join("-") }
-  
+
   define_inline_command(:quark) {|args| "screw" }
   alias_command :quark, :cork
-  
+
   define_block_command(:reverse_lines) do |args, inner|
     inner.split(/\n/).reverse.join("\n")
   end
-  
+
   define_block_command(:reverse) {|args, inner| inner.reverse }
-  
+
   define_block_command(:straight) {|args, inner| inner }
 end
 
@@ -49,12 +50,12 @@ end
 Papyrus::Lexicon.add_command 'include', IncludeCommand
 
 describe "The parser" do
-  
+
   it "should pass text without any subs straight through" do
     Template.render("Here is some text").should == "Here is some text"
   end
-  
-  describe "when parsing variables" do  
+
+  describe "when parsing variables" do
     it "should replace a variable with its value" do
       Template.render("[foo]", :vars => { 'foo' => "Content of variable" }).should == "Content of variable"
     end
@@ -112,7 +113,7 @@ describe "The parser" do
       end
     end
   end
-  
+
   describe "when parsing backslashed characters" do
     it "should not replace a backslashed sub, eating the backslashes, when the sub is the only thing present" do
       Template.render("\\[foo\\]", :vars => { 'foo' => "Content of variable" }).should == "[foo]"
@@ -128,7 +129,7 @@ describe "The parser" do
       Template.render("[foo]", :vars => { 'foo' => "\\[bar\\]" }).should == "[bar]"
     end
   end
-  
+
   describe "when parsing custom commands" do
     def parse(content, options={})
       Template.render(content, { :custom_command_class => CustomCommands }.merge(options))
@@ -163,7 +164,7 @@ describe "The parser" do
       parse("[quark]").should == parse("[cork]")
     end
   end
-  
+
   describe "inside a shielded command" do
     # Note that this just so happens to use custom commands - we could use any type of commands here
     # (or at least we could, if there were other kinds...)
@@ -180,7 +181,7 @@ describe "The parser" do
       parse("[frobulate [tribblize erkatz] [sproink [quark] brothers]]", :shielded_commands => %w(frobulate)).should == "Jim [tribblize erkatz]ed the [sproink [quark] brothers]"
     end
   end
-  
+
   describe "when parsing subs with zany quotes" do
     subs = [
       "[']", '["]', "[' foo bar]", "[ '' ('' '' '' ...)]", '[ "quote" ]', '[ "quote"]',
@@ -202,7 +203,7 @@ describe "The parser" do
       end
     end
   end
-  
+
   describe "when parsing non-existent subs" do
     it "should not replace a sub that does not refer to an existent command or variable" do
       Template.render("[foo]").should == "[foo]"
@@ -221,7 +222,7 @@ describe "The parser" do
       Papyrus::Template.render("[ aslkfsdf [bar] asdlf ]").should == "[ aslkfsdf [bar] asdlf ]"
     end
   end
-  
+
   describe "when parsing an [include] command" do
     it "should not replace [include] with no template name" do
       Template.render("[include]").should == "[include]"
@@ -271,7 +272,7 @@ EOT
       Template.render(source, :custom_command_class => CustomCommands).should == parsed
     end
   end
-  
+
   describe "when parsing custom block commands" do
     it "should correctly parse a block command" do
       source = <<-EOT
@@ -290,7 +291,7 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
 EOT
       Template.render(source, :custom_command_class => CustomCommands).should == parsed
     end
-    
+
     it "should correctly parsed nested block commands" do
       source = <<-EOT
 [straight][reverse_lines]Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
@@ -307,7 +308,7 @@ Morbi commodo, ipsum sed pharetra gravida,
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
 EOT
     end
-    
+
     it "should autoclose any block commands that aren't closed by the end of the string" do
       source = <<-EOT
 [straight][reverse_lines]Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
@@ -323,14 +324,14 @@ Morbi commodo, ipsum sed pharetra gravida,
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
       Template.render(source, :custom_command_class => CustomCommands).should == parsed
     end
-    
+
     it "should not rollback a block command if the syntax of the closing sub is not correct, but treat it as if it was never closed" do
       source = "blah [reverse]lorem ipsum dolor sit amet[/ reverse] some more"
       parsed = "blah erom emos ]esrever /[tema tis rolod muspi merol"
       Template.render(source, :custom_command_class => CustomCommands).should == parsed
     end
   end
-  
+
   describe "when parsing subs where the name is a sub" do
     it "should not crash when the outer sub does not exist" do
       Template.render("[[foo] bar]", :vars => {"foo" => "bar"}).should == "[bar bar]"
@@ -342,5 +343,5 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
       Template.render("[[[[[[foo]]]]]]", :vars => {"foo" => "bar"}).should == "[[[[[bar]]]]]"
     end
   end
-  
+
 end

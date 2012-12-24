@@ -1,194 +1,206 @@
-require File.dirname(__FILE__)+'/test_helper'
 
-module Papyrus
-  class ContextItemWrapper
-    include ContextItem
-    attr_reader :parent
-  end
-end
+require_relative '../spec_helper'
 
 describe Papyrus::ContextItem do
-  
-  before :each do
-    @ci = ContextItemWrapper.new
-    @ci.ivs "@vars", {}
-  end
-  
-  describe "when included" do
-    it 'should define attribute accessors for @object' do
-      methods = ContextItemWrapper.instance_methods
-      methods.should include("object")
-      methods.should include("object=")
+  let(:wrapper_class) {
+    Class.new do
+      include Papyrus::ContextItem
     end
-    it 'should define #[]= (as an alias for #set)' do
-      ContextItemWrapper.instance_methods.should include('[]=')
-    end
-    it 'should define #[] (as an alias for #get)' do
-      ContextItemWrapper.instance_methods.should include('[]')
-    end
-    it 'should define #include? (as an alias for #has_key?)' do
-      ContextItemWrapper.instance_methods.should include('include?')
-    end
-  end
-  
-  it_should_delegate(:has_key?, :include?, :to => :vars, :from => ContextItemWrapper.new)
-  
-  describe '#get' do
-    it "should not resolve a variable that starts with a number" do
-      @ci.ivs "@vars", "342skfdlf" => "foo"
-      lambda { @ci.get("342skfdlf") }.should raise_error(UnknownVariableError)
-    end
-    it 'should stringify the given variable name before using it' do
-      @ci.stub_methods(:get_primary_part => nil)
-      @ci.get(:foo)
-      @ci.should have_received(:get_primary_part).with("foo", "foo")
-    end
-    it "should get the primary part of the variable and then stop short if there's only one part" do
-      @ci.stub_method(:get_primary_part => "some value")
-      value = @ci.get("foo")
-      value.should == "some value"
-      @ci.should_not have_received(:get_secondary_part)
-    end
-    it "should resolve a multi-part variable" do
-      @ci.stub_methods(:get_primary_part => {'bar' => 'baz'}, :get_secondary_part => 'baz')
-      value = @ci.get("foo.bar")
-      value.should == "baz"
-      @ci.should have_received(:get_secondary_part).with("foo.bar", "bar", 'bar' => 'baz')
-    end
-    it "should not continue resolving a multi-part variable if it can't find the first part" do
-      @ci.stub_methods(:get_primary_part => nil)
-      @ci.track_method(:get_secondary_part)
-      @ci.get("foo.bar")
-      @ci.should_not have_received(:get_secondary_part)
+  }
+  let(:wrapper) {
+    wrapper_class.new
+  }
+
+  describe '@object' do
+    it "has a getter and setter defined" do
+      wrapper.object = :object
+      expect(wrapper.object).to eq :object
     end
   end
 
-  describe '#set' do
-    it "should store the given value in @vars as the given key, stringifying and downcasing the key beforehand" do
-      @ci.ivs "@vars", {}
-      @ci.set(:goUlAsh, "bar")
-      @ci.ivg("@vars")["goulash"].should == "bar"
+  describe '#has_key?' do
+    it "delegates to vars" do
+      wrapper.vars = {'foo' => 'bar'}
+      expect(wrapper.has_key?('foo')).to eq true
+      expect(wrapper.has_key?('buz')).to eq false
     end
   end
-  
+
+  describe '#include?' do
+    it "delegates to vars" do
+      wrapper.vars = {'foo' => 'bar'}
+      expect(wrapper.include?('foo')).to eq true
+      expect(wrapper.include?('buz')).to eq false
+    end
+  end
+
+  %w(get []).each do |method|
+    describe "##{method}" do
+      it "doesn't resolve a variable that starts with a number (even if it technically exists)" do
+        wrapper.vars['342skfdlf'] = 'foo'
+        expect { wrapper.__send__(method, "342skfdlf") }.to raise_error(Papyrus::UnknownVariableError)
+      end
+
+      it "stringifies the given variable name before using it" do
+        stub(wrapper)._get_primary_part
+        wrapper.__send__(method, :foo)
+        expect(wrapper).to have_received._get_primary_part('foo', 'foo')
+      end
+
+      it "gets the primary part of the variable and then stops short if there's only one part" do
+        stub(wrapper)._get_primary_part { 'some value' }
+        stub(wrapper)._get_secondary_part
+        value = wrapper.__send__(method, 'foo')
+        expect(value).to eq 'some value'
+        expect(wrapper).to_not have_received._get_secondary_part
+      end
+
+      it "resolves a multi-part variable" do
+        stub(wrapper)._get_primary_part { {'bar' => 'baz'} }
+        stub(wrapper)._get_secondary_part { 'baz' }
+        value = wrapper.__send__(method, 'foo.bar')
+        expect(value).to eq 'baz'
+        wrapper.should have_received._get_secondary_part('foo.bar', 'bar', 'bar' => 'baz')
+      end
+
+      it "doesn't continue resolving a multi-part variable if it can't find the first part" do
+        stub(wrapper)._get_primary_part
+        stub(wrapper)._get_secondary_part
+        wrapper.__send__(method, 'foo.bar')
+        expect(wrapper).to_not have_received._get_secondary_part
+      end
+    end
+  end
+
+  %w(set []=).each do |method|
+    describe "##{method}" do
+      it "stores the given value in vars as the given key, stringifying and downcasing the key beforehand" do
+        wrapper.__send__(method, :goUlAsh, "bar")
+        expect(wrapper.vars["goulash"]).to eq "bar"
+      end
+    end
+  end
+
   describe '#delete' do
-    it "should remove the given key from @vars" do
-      @ci.ivs "@vars", {"foo" => "bar"}
-      @ci.delete("foo")
-      @ci.ivg("@vars").should == {}
+    it "removes the given key from vars" do
+      wrapper.vars['foo'] = 'bar'
+      wrapper.delete('foo')
+      expect(wrapper.vars).to_not have_key('foo')
     end
   end
-  
+
   describe '#vars' do
-    it "should set @vars to a new hash and return it if @vars hasn't been defined yet" do
-      @ci.vars
-      @ci.vars.should == {}
-    end
-    it "should return @vars if it's defined" do
-      @ci.ivs "@vars", {"foo" => "bar"}
-      @ci.vars.should == {"foo" => "bar"}
+    it "initializes @vars to a new hash on first access" do
+      wrapper.vars
+      expect(wrapper.vars).to eq({})
     end
   end
-  
+
   describe '#vars=' do
-    it "should replace @vars with the given hash" do
-      @ci.vars = {"foo" => "bar"}
-      @ci.ivg("@vars").should == {"foo" => "bar"}
+    it "replaces @vars with the given hash" do
+      wrapper.vars = {"foo" => "bar"}
+      expect(wrapper.vars).to eq({"foo" => "bar"})
     end
-    it "should stringify the given hash before storing it" do
-      @ci.vars = {:foo => "bar", :baz => "quux"}
-      @ci.ivg("@vars").should == {"foo" => "bar", "baz" => "quux"}
+    it "stringifies the given hash before storing it" do
+      wrapper.vars = {:foo => "bar", :baz => "quux"}
+      expect(wrapper.vars).to eq({"foo" => "bar", "baz" => "quux"})
     end
   end
-  
+
   describe '#parser' do
-    it "should return the parser of the parent node if this context has a parent" do
-      @ci.ivs "@parent", Object.stub_instance(:parser => :parser)
-      @ci.parser.should == :parser
+    it "returns the parser of the parent node if this context has a parent" do
+      parent = stub!.parser { :parser }
+      stub(wrapper).parent { parent }
+      expect(wrapper.parser).to eq :parser
     end
-    it "should return nil if this context doesn't have a parent" do
-      @ci.ivs "@parent", nil
-      @ci.parser.should == nil
+
+    it "returns nil if this context doesn't have a parent" do
+      stub(wrapper).parent { nil }
+      expect(wrapper.parser).to eq nil
     end
   end
-  
+
   describe '#true?' do
-    it "should return true when the given variable resolves to true" do
-      @ci.stub_method(:get => true)
-      @ci.true?("").should == true
+    it "returns true when the given variable resolves to true" do
+      stub(wrapper).get { true }
+      expect(wrapper.true?("")).to eq true
     end
-    it "should return true when the given variable resolves to a true-ish value" do
-      @ci.stub_method(:get => "foo")
-      @ci.true?("").should == true
+
+    it "returns true when the given variable resolves to a true-ish value" do
+      stub(wrapper).get { 'foo' }
+      expect(wrapper.true?("")).to eq true
     end
-    it "should return false when the given variable resolves to false" do
-      @ci.stub_method(:get => false)
-      @ci.true?("").should == false
+
+    it "returns false when the given variable resolves to false" do
+      stub(wrapper).get { false }
+      expect(wrapper.true?("")).to eq false
     end
-    it "should return false when the given variable resolves to nil" do
-      @ci.stub_method(:get => nil)
-      @ci.true?("").should == false
+
+    it "returns false when the given variable resolves to nil" do
+      stub(wrapper).get { nil }
+      expect(wrapper.true?("")).to eq false
     end
   end
-  
+
   #---
-  
-  describe '#get_primary_part' do
+
+=begin
+  describe '#_get_primary_part' do
     it "should return the value of @vars' key that matches this part" do
-      @ci.ivs "@vars", {"foo" => "bar"}
-      @ci.send(:get_primary_part, "foo", "foo").should == "bar"
+      wrapper.ivs "@vars", {"foo" => "bar"}
+      wrapper.send(:_get_primary_part, "foo", "foo").should == "bar"
     end
     it "should return the value of @object's key that matches this part, if @object is a hash" do
-      @ci.ivs "@object", {"foo" => "bar"}
-      @ci.send(:get_primary_part, "foo", "foo").should == "bar"
+      wrapper.ivs "@object", {"foo" => "bar"}
+      wrapper.send(:_get_primary_part, "foo", "foo").should == "bar"
     end
     it "should return the value of @object's key that matches this part (as a symbol), if @object is a hash" do
-      @ci.ivs "@object", {:foo => "bar"}
-      @ci.send(:get_primary_part, "foo", "foo").should == "bar"
+      wrapper.ivs "@object", {:foo => "bar"}
+      wrapper.send(:_get_primary_part, "foo", "foo").should == "bar"
     end
     it "should return the value of @object's method that matches this part" do
       mock = Object.stub_instance(:foo => "bar")
-      @ci.ivs "@object", mock
-      value = @ci.send(:get_primary_part, "foo", "foo")
+      wrapper.ivs "@object", mock
+      value = wrapper.send(:_get_primary_part, "foo", "foo")
       value.should == "bar"
       mock.should have_received(:foo)
     end
     it "should try to resolve this part in the parent context as a last resort" do
       parent = Object.stub_instance(:get => "bar")
-      @ci.ivs "@parent", parent
-      value = @ci.send(:get_primary_part, "foo", "foo")
+      wrapper.ivs "@parent", parent
+      value = wrapper.send(:_get_primary_part, "foo", "foo")
       parent.should have_received(:get).with("foo")
       value.should == "bar"
     end
     it "should raise UnknownVariableError if this part could not be resolved" do
-      lambda { @ci.send(:get_primary_part, "foo", "foo") }.should raise_error(UnknownVariableError)
+      lambda { wrapper.send(:_get_primary_part, "foo", "foo") }.should raise_error(UnknownVariableError)
     end
   end
-  
-  describe '#get_secondary_part' do
+
+  describe '#_get_secondary_part' do
     it "should return the value of @vars' key that matches this part" do
-      @ci.ivs "@vars", {"foo.bar" => "baz"}
-      @ci.send(:get_secondary_part, "foo.bar", "bar", nil).should == "baz"
+      wrapper.ivs "@vars", {"foo.bar" => "baz"}
+      wrapper.send(:_get_secondary_part, "foo.bar", "bar", nil).should == "baz"
     end
     describe "when value-so-far is not nil" do
       it "should treat this part as a key in the value-so-far, if it's a hash" do
-        @ci.send(:get_secondary_part, "foo.bar", "bar", {"bar" => "baz"}).should == "baz"
+        wrapper.send(:_get_secondary_part, "foo.bar", "bar", {"bar" => "baz"}).should == "baz"
       end
       it "should treat this part as an index of the value-so-far, if it's an array" do
-        @ci.send(:get_secondary_part, "foo.1", "1", [ "quux", "baz" ]).should == "baz"
+        wrapper.send(:_get_secondary_part, "foo.1", "1", [ "quux", "baz" ]).should == "baz"
       end
       it "should return the value of the value-so-far's method that matches this part" do
         mock = Object.stub_instance(:bar => 'baz')
-        @ci.send(:get_secondary_part, "foo.bar", "bar", mock).should == "baz"
+        wrapper.send(:_get_secondary_part, "foo.bar", "bar", mock).should == "baz"
       end
       it "should raise UnknownVariableError if value-so-far has no method that matches this part" do
         mock = Object.stub_instance(:joe => 'bloe')
-        lambda { @ci.send(:get_secondary_part, "foo.bar", "bar", mock) }.should raise_error(UnknownVariableError)
+        lambda { wrapper.send(:_get_secondary_part, "foo.bar", "bar", mock) }.should raise_error(UnknownVariableError)
       end
     end
     it "should raise UnknownVariableError if this part could not be resolved" do
-      lambda { @ci.send(:get_secondary_part, "foo.bar", "foo", nil) }.should raise_error(UnknownVariableError)
+      lambda { wrapper.send(:_get_secondary_part, "foo.bar", "foo", nil) }.should raise_error(UnknownVariableError)
     end
   end
-  
+=end
 end

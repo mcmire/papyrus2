@@ -1,32 +1,57 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus::Document do
-  
-  before do
-    @doc = Document.new(nil)
-  end
-  
+  let(:doc) { described_class.new(nil) }
+
   it "should be a ContextItem" do
-    Document.ancestors.should include(ContextItem)
+    described_class.ancestors.should include(Papyrus::ContextItem)
   end
-  
-  it_should_delegate :template, :to => :@parser, :from => lambda { Document.new(nil) }
-  it_should_delegate :options, :vars, :to => :template, :from => lambda { Document.new(nil) }
-  
+
   describe '.new' do
     it "should set @parser to the given value" do
-      Document.new(:parser).ivg("@parser").should == :parser
+      doc = described_class.new(:parser)
+      expect(doc.parser).to eq :parser
     end
+
     it "should initialize the @nodes array using the given NodeList" do
-      doc = Document.new(:parser, NodeList.new([ Text.new("foo") ]))
-      doc.nodes.should == [ Text.new("foo") ]
+      doc = described_class.new(:parser, Papyrus::NodeList.new([ Papyrus::Text.new("foo") ]))
+      expect(doc.nodes).to eq [ Papyrus::Text.new("foo") ]
     end
   end
-  
+
   describe '#document' do
-    it "should just return self" do
-      @doc.document.should == @doc
+    it "should just return the Document object" do
+      expect(doc.document).to equal doc
     end
   end
-  
+
+  describe '#template' do
+    it "delegates to the parser" do
+      parser = stub!.template { :template }
+      stub(doc).parser { parser }
+      expect(doc.template).to eq :template
+    end
+  end
+
+  describe '#options' do
+    it "delegates to the template" do
+      stub(template = Object.new) do
+        options { :options }
+      end
+      stub(doc).template { template }
+      expect(doc.options).to eq :options
+    end
+  end
+
+  describe '#vars' do
+    it "delegates to the template" do
+      stub(template = Object.new) do
+        vars { :vars }
+      end
+      stub(doc).template { template }
+      expect(doc.vars).to eq :vars
+    end
+  end
 end
+

@@ -1,42 +1,45 @@
-require File.dirname(__FILE__)+'/test_helper'
 
-module TestModule
-  class Foo; end
-  class Bar; end
-end
+require_relative '../spec_helper'
 
 describe Papyrus::Lexicon do
-  
-  # probably a better way to do this
-  before :each do
-    Papyrus::Lexicon.cvs "@@commands", {}
-    Papyrus::Lexicon.cvs "@@extensions", []
-  end
-  after :each do
-    Papyrus::Lexicon.cvs "@@commands", {}
-    Papyrus::Lexicon.cvs "@@extensions", []
-  end
-  
-  describe ".add_commands" do
-    it "should add the given command to the global commands hash" do
+  let(:lexicon) {
+    Class.new(described_class)
+  }
+
+  describe '.add_commands' do
+    it "adds the given command to the global commands hash" do
       mod = Module.new
-      Papyrus::Lexicon.add_command "foo", mod
-      Papyrus::Lexicon.cvg("@@commands").should == { "foo" => mod }
+      lexicon.add_command "foo", mod
+      expect(lexicon.commands[:foo]).to equal mod
     end
   end
-  
+
   describe '.extend_lexicon' do
-    it "should read the classes contained in the given module and add them to the lexicon as commands" do
-      Papyrus::Lexicon.extend_lexicon(TestModule)
-      Papyrus::Lexicon.commands.should == { "foo" => TestModule::Foo, "bar" => TestModule::Bar }
+    let(:foo_class) { Class.new }
+    let(:bar_class) { Class.new }
+    let!(:mod) {
+      foo_class = self.foo_class
+      bar_class = self.bar_class
+      Module.new do
+        const_set(:Foo, foo_class)
+        const_set(:Bar, bar_class)
+      end
+    }
+
+    it "reads the classes contained in the given module and add them to the lexicon as commands" do
+      lexicon.extend_lexicon(mod)
+      lexicon.extensions.should include(mod)
+      lexicon.commands[:foo].should equal foo_class
+      lexicon.commands[:bar].should equal bar_class
     end
-    it "should do nothing if the lexicon has already been extended with the given class" do
-      Papyrus::Lexicon.track_methods(:add_command)
-      Papyrus::Lexicon.extend_lexicon(TestModule)
-      Papyrus::Lexicon.extend_lexicon(TestModule)
-      Papyrus::Lexicon.extensions.should include(TestModule)
-      Papyrus::Lexicon.should have_received(:add_command).twice  # for the two commands
+
+    it "does nothing if the lexicon has already been extended with the given class" do
+      stub(lexicon).add_command
+      lexicon.extend_lexicon(mod)
+      lexicon.extend_lexicon(mod)
+      lexicon.should have_received.add_command(:foo, anything).once
+      lexicon.should have_received.add_command(:bar, anything).once
     end
   end
-  
 end
+

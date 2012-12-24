@@ -1,12 +1,13 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus::Text do
-  
+
   before :each do
     @text = Text.new('Some text and stuff')
   end
-  
-  describe '.new' do    
+
+  describe '.new' do
     it 'should store the given string' do
       @text.ivg('@text').should == 'Some text and stuff'
     end
@@ -24,5 +25,5 @@ describe Papyrus::Text do
       @text.evaluate.should_not equal(@text.text)
     end
   end
-  
+
 end

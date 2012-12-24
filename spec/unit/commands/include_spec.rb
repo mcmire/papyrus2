@@ -1,27 +1,28 @@
-require File.dirname(__FILE__)+'/../test_helper'
+
+require_relative '../spec_helper'
 
 describe Papyrus::Commands::Include do
-  
+
   it "should be an InsertionSub" do
     Commands::Include.ancestors.should include(InsertionSub)
   end
-  
+
   before do
     @include = Commands::Include.new("", NodeList.new, [])
   end
-  
+
   describe '.new' do
     it "should not set @template_name" do
       @include.ivg("@template_name").should == nil
     end
   end
-  
+
   describe '#get_template_source' do
     it "should raise a NotImplementedError by default" do
       lambda { @include.get_template_source }.should raise_error(NotImplementedError)
     end
   end
-  
+
   describe '#evaluate' do
     before do
       @include.stub_methods(:get_template_source => "The template content", :parse_and_insert_into_parent => nil)
@@ -50,5 +51,5 @@ describe Papyrus::Commands::Include do
       @include.evaluate.should == "The template content"
     end
   end
-  
+
 end

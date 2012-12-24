@@ -1,11 +1,12 @@
-require File.dirname(__FILE__)+'/test_helper'
+
+require_relative '../spec_helper'
 
 describe "The tokenizer" do
-  
+
   def tokenize(content)
     Tokenizer.new(Template.new(content)).tokenize
   end
-  
+
   it "should correctly tokenize a closing sub with arguments and surrounding non-sub content" do
     tokens = tokenize("before the ] sub [/some args and stuff] after / the sub")
     tokens.should == TokenList[
@@ -25,7 +26,7 @@ describe "The tokenizer" do
       Token::Text.new(" after / the sub")
     ]
   end
-  
+
   it "should correctly tokenize nested subs" do
     tokens = tokenize("this [is a [nested sub [ok]]] ok")
     tokens.should == TokenList[
@@ -54,14 +55,14 @@ describe "The tokenizer" do
       Token::Text.new(" ok")
     ]
   end
-  
+
   it "should correctly tokenize backslashed brackets" do
     tokens = tokenize("\\[foo\\]")
     tokens.should == TokenList[
       Token::Text.new("[foo]")
     ]
   end
-  
+
   it "should correctly tokenize backslashed brackets with non-backslashed brackets" do
     tokens = tokenize("\\[foo\\] bar [baz]")
     tokens.should == TokenList[
@@ -73,5 +74,5 @@ describe "The tokenizer" do
       ]
     ]
   end
-  
+
 end
