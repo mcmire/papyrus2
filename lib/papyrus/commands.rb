@@ -1,9 +1,6 @@
-module Papyrus
-  module Commands; end
-end
 
-Dir.entries(File.dirname(__FILE__)+'/commands').each do |file|
-  next if file =~ /^\./
-  filenoext = file.sub(/\.[^.]+$/, "")
-  Papyrus::Commands.const_get(filenoext.classify.to_sym)  # load class dynamically
-end
+Dir[ File.expand_path('../commands/*.rb', __FILE__) ].each {|fn| require fn }
+
+Papyrus::Lexicon.extend_lexicon(Papyrus::Commands)
+
+
