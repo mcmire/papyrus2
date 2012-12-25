@@ -64,196 +64,197 @@ module Papyrus
     #  ["@content"]
     #end
 
-  def _build_document
-    @head = tokens
-    while token = tokens.advance
-      if TokenList === token
-        sub = _build_sub
-        (sub.kind_of?(BlockCommand) ? @stack : @stack.last) << sub if sub
+    def _build_document
+      @head = tokens
+      while token = tokens.advance
+        if TokenList === token
+          sub = _build_sub
+          (sub.kind_of?(BlockCommand) ? @stack : @stack.last) << sub if sub
+        else
+          @stack.last << Text.new(token)
+        end
+      end
+    end
+
+    # If any BlockCommands weren't closed properly, we just end them manually.
+    #
+    def _close_open_block_commands
+      return unless @stack.size > 1
+      until @stack.size == 1
+        sub = @stack.pop
+        @stack.last << sub
+      end
+    end
+
+    def _build_sub
+      head = @head
+      # descend into the TokenList
+      raw_tokens = @head = @head.curr
+
+      @head.advance  # left bracket
+
+      if Token::Slash === @head.next
+        _handle_command_close
       else
-        @stack.last << Text.new(token)
+        name, args = _gather_sub_name_and_args
+        ##return Text.new("") if modify_active_cmd(name, args)
+        method_args = [ name, args, raw_tokens ]
+        if @template.custom_commands && @template.custom_commands.class.has_block_command?(name)
+          sub = CustomBlockCommand.new(*method_args)
+        else
+          sub = InlineSub.new(*method_args)
+        end
+        sub.parent = @stack.last
+        sub
       end
+    rescue ParserError => e
+      # oops, had a problem gathering the sub name/args
+      Text.new(raw_tokens.to_s)
+    ensure
+      # ascend out of the TokenList again
+      @head = head
     end
-  end
 
-  # If any BlockCommands weren't closed properly, we just end them manually.
-  #
-  def _close_open_block_commands
-    return unless @stack.size > 1
-    until @stack.size == 1
-      sub = @stack.pop
-      @stack.last << sub
-    end
-  end
+    # Assuming we've already hit a left bracket and slash, pop off the command
+    # on top of the stack if it looks like that command is being closed.
+    #
+    # An InvalidEndOfCommandError is raised if we hit the end of the token list
+    # and the open command is never closed.
+    #
+    # An UnmatchedLeftBracketError is raised if we hit the end of the token list
+    # before reaching a right bracket.
+    #
+    def _handle_command_close
+      @head.advance # slash
+      command_name = @head.advance
+      active_cmd = @stack.last
 
-  def _build_sub
-    head = @head
-    # descend into the TokenList
-    raw_tokens = @head = @head.curr
+      raise InvalidCloseSubError   unless Token::Text === command_name
+      raise UnmatchedCloseSubError unless BlockCommand === active_cmd && active_cmd.name == command_name
 
-    @head.advance  # left bracket
-
-    if Token::Slash === @head.next
-      _handle_command_close
-    else
-      name, args = _gather_sub_name_and_args
-      ##return Text.new("") if modify_active_cmd(name, args)
-      method_args = [ name, args, raw_tokens ]
-      if @template.custom_commands && @template.custom_commands.class.has_block_command?(name)
-        sub = CustomBlockCommand.new(*method_args)
-      else
-        sub = InlineSub.new(*method_args)
+      cmd = @stack.pop
+      @stack.last << cmd
+      # get the rest of the command
+      reached_eoc = false
+      while token = @head.advance
+        if Token::RightBracket === token
+          reached_eoc = true
+          break
+        end
       end
-      sub.parent = @stack.last
-      sub
+      raise UnmatchedLeftBracketError unless reached_eoc
+
+      return nil
     end
-  rescue ParserError => e
-    # oops, had a problem gathering the sub name/args
-    Text.new(raw_tokens.to_s)
-  ensure
-    # ascend out of the TokenList again
-    @head = head
-  end
 
-  # Assuming we've already hit a left bracket and slash, pop off the command
-  # on top of the stack if it looks like that command is being closed.
-  #
-  # An InvalidEndOfCommandError is raised if we hit the end of the token list
-  # and the open command is never closed.
-  #
-  # An UnmatchedLeftBracketError is raised if we hit the end of the token list
-  # before reaching a right bracket.
-  #
-  def _handle_command_close
-    @head.advance # slash
-    command_name = @head.advance
-    active_cmd = @stack.last
+    ## If the given name doesn't refer to a command but just modifies the command
+    ## on top of the stack (assuming it's a BlockCommand), returns true, otherwise
+    ## returns false.
+    #def modify_active_cmd(name, args)
+    #  active_cmd = stack.last
+    #  (active_cmd.is_a?(BlockCommand) && active_cmd.modified_by?(name, args)) || false
+    #end
 
-    raise InvalidCloseSubError   unless Token::Text === command_name
-    raise UnmatchedCloseSubError unless BlockCommand === active_cmd && active_cmd.name == command_name
+    # Assuming that we've already hit a left bracket, step through the following
+    # tokens to collect the name and arguments of the sub. Arguments enclosed in
+    # quotes will be properly grouped together in a NodeList.
+    #
+    # Raises an UnmatchedSingleQuote or UnmatchedDoubleQuoteError if we've hit
+    # an opening quote mark and we hit the end of the token list before reaching
+    # a closing quote mark.
+    #
+    # Raises an UnmatchedLeftBracketError if we hit the end of the token list
+    # before reaching a right bracket.
+    #
+    def _gather_sub_name_and_args
+      name, args = nil, NodeList.new
+      error = nil
+      reached_eoc = false
 
-    cmd = @stack.pop
-    @stack.last << cmd
-    # get the rest of the command
-    reached_eoc = false
-    while token = @head.advance
-      if Token::RightBracket === token
-        reached_eoc = true
-        break
-      end
-    end
-    raise UnmatchedLeftBracketError unless reached_eoc
-
-    return nil
-  end
-
-  ## If the given name doesn't refer to a command but just modifies the command
-  ## on top of the stack (assuming it's a BlockCommand), returns true, otherwise
-  ## returns false.
-  #def modify_active_cmd(name, args)
-  #  active_cmd = stack.last
-  #  (active_cmd.is_a?(BlockCommand) && active_cmd.modified_by?(name, args)) || false
-  #end
-
-  # Assuming that we've already hit a left bracket, step through the following
-  # tokens to collect the name and arguments of the sub. Arguments enclosed in
-  # quotes will be properly grouped together in a NodeList.
-  #
-  # Raises an UnmatchedSingleQuote or UnmatchedDoubleQuoteError if we've hit
-  # an opening quote mark and we hit the end of the token list before reaching
-  # a closing quote mark.
-  #
-  # Raises an UnmatchedLeftBracketError if we hit the end of the token list
-  # before reaching a right bracket.
-  #
-  def _gather_sub_name_and_args
-    name, args = nil, NodeList.new
-    error = nil
-    reached_eoc = false
-
-    while token = @head.advance
-      arg = nil
-      case token
-      when TokenList
-        arg = _build_sub
-      when Token::RightBracket
-        reached_eoc = true
-        break
-      when Token::SingleQuote, Token::DoubleQuote
-        begin
-          arg = _build_arg
-        rescue UnmatchedSingleQuoteError, UnmatchedDoubleQuoteError => error
-          # keep going until we reach the end of the sub or the token list
-        rescue MisplacedQuoteError
+      while token = @head.advance
+        arg = nil
+        case token
+        when TokenList
+          arg = _build_sub
+        when Token::RightBracket
+          reached_eoc = true
+          break
+        when Token::SingleQuote, Token::DoubleQuote
+          begin
+            arg = _build_arg
+          rescue UnmatchedSingleQuoteError, UnmatchedDoubleQuoteError => error
+            # keep going until we reach the end of the sub or the token list
+          rescue MisplacedQuoteError
+            arg = Text.new(token)
+          end
+        when Token::Whitespace
+          # skip whitespace
+        else
           arg = Text.new(token)
         end
-      when Token::Whitespace
-        # skip whitespace
-      else
-        arg = Text.new(token)
-      end
-      if arg
-        if name
-          args << arg
-        else
-          name = arg.evaluate.to_s
-          @open_subs << name
+        if arg
+          if name
+            args << arg
+          else
+            name = arg.evaluate.to_s
+            @open_subs << name
+          end
         end
       end
+
+      raise error if error
+      raise UnmatchedLeftBracketError unless reached_eoc
+      raise UnknownSubError if name.nil?
+      raise UnknownSubError if name.blank? || name !~ /^([a-z]+:)?[A-Za-z][\w.-]*$/
+
+      [name, args]
+    ensure
+      @open_subs.pop if name
     end
 
-    raise error if error
-    raise UnmatchedLeftBracketError unless reached_eoc
-    raise UnknownSubError if name.nil?
-    raise UnknownSubError if name.blank? || name !~ /^([a-z]+:)?[A-Za-z][\w.-]*$/
+    # Assuming that we've already hit an opening quote mark inside a sub, step
+    # through the following tokens to collect the tokens before the closing
+    # quote mark that represent an argument inside that sub. The argument is
+    # wrapped in a NodeList. If we encounter another sub within the argument,
+    # the corresponding Sub object will be added to the NodeList.
+    #
+    # Raises a MisplacedQuoteError if the token before the opening quote
+    # character is not a whitespace token.
+    #
+    # Raises an UnmatchedSingleQuoteError or UnmatchedDoubleQuoteError if we hit
+    # the end of the token list before reaching a closing quote mark.
+    #
+    def _build_arg
+      quote_klass = @head.curr.class
+      arg = NodeList.new
+      arg.parent = @stack.last
+      ## Push a dummy BlockCommand onto the stack in case the top of the stack is a
+      ## BlockCommand and we come across, say, 'else' in the middle of the string -
+      ## we don't want that interpreted as a modifier
+      #@stack << NodeList.new(@stack.last)
 
-    [name, args]
-  ensure
-    @open_subs.pop if name
-  end
+      raise MisplacedQuoteError unless Token::Whitespace === @head.prev or Token::LeftBracket === @head.prev
 
-  # Assuming that we've already hit an opening quote mark inside a sub, step
-  # through the following tokens to collect the tokens before the closing
-  # quote mark that represent an argument inside that sub. The argument is
-  # wrapped in a NodeList. If we encounter another sub within the argument,
-  # the corresponding Sub object will be added to the NodeList.
-  #
-  # Raises a MisplacedQuoteError if the token before the opening quote
-  # character is not a whitespace token.
-  #
-  # Raises an UnmatchedSingleQuoteError or UnmatchedDoubleQuoteError if we hit
-  # the end of the token list before reaching a closing quote mark.
-  #
-  def _build_arg
-    quote_klass = @head.curr.class
-    arg = NodeList.new
-    arg.parent = @stack.last
-    ## Push a dummy BlockCommand onto the stack in case the top of the stack is a
-    ## BlockCommand and we come across, say, 'else' in the middle of the string -
-    ## we don't want that interpreted as a modifier
-    #@stack << NodeList.new(@stack.last)
-
-    raise MisplacedQuoteError unless Token::Whitespace === @head.prev or Token::LeftBracket === @head.prev
-
-    reached_eoq = false
-    unmatched_error = (quote_klass == Token::SingleQuote) ? UnmatchedSingleQuoteError : UnmatchedDoubleQuoteError
-    while token = @head.advance
-      case token
-      when quote_klass
-        reached_eoq = true
-        break
-      when TokenList
-        arg << _build_sub
-      when Token::RightBracket
-        break
-      else
-        arg << Text.new(token)
+      reached_eoq = false
+      unmatched_error = (quote_klass == Token::SingleQuote) ? UnmatchedSingleQuoteError : UnmatchedDoubleQuoteError
+      while token = @head.advance
+        case token
+        when quote_klass
+          reached_eoq = true
+          break
+        when TokenList
+          arg << _build_sub
+        when Token::RightBracket
+          break
+        else
+          arg << Text.new(token)
+        end
       end
+      raise unmatched_error unless reached_eoq
+      arg
+    #ensure
+    #  # we can take the dummy value off now
+    #  @stack.pop
     end
-    raise unmatched_error unless reached_eoq
-    arg
-  #ensure
-  #  # we can take the dummy value off now
-  #  @stack.pop
   end
 end
