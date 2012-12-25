@@ -1,3 +1,12 @@
+GIT
+  remote: http://github.com/dashkb/rocco
+  revision: e2d1396bcc494088b983e7a2c40214656fdadd8d
+  specs:
+    rocco (0.8.2)
+      mustache
+      pygments.rb
+      redcarpet (~> 2)
+
 PATH
   remote: .
   specs:
@@ -11,10 +20,19 @@ GEM
     guard (1.4.0)
       listen (>= 0.4.2)
       thor (>= 0.14.6)
+    guard-rocco (0.0.3)
+      guard (>= 0.4.0)
+      rocco
     guard-rspec (0.7.3)
       guard (>= 0.10.0)
     listen (0.5.3)
+    mustache (0.99.4)
+    posix-spawn (0.3.6)
+    pygments.rb (0.3.3)
+      posix-spawn (~> 0.3.6)
+      yajl-ruby (~> 1.1.0)
     rb-fsevent (0.9.2)
+    redcarpet (2.2.2)
     rr (1.0.4)
     rspec (2.11.0)
       rspec-core (~> 2.11.0)
@@ -26,15 +44,19 @@ GEM
     rspec-mocks (2.11.3)
     terminal-notifier-guard (1.5.3)
     thor (0.16.0)
+    yajl-ruby (1.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   growl (~> 1.0.1)
+  guard-rocco
   guard-rspec (~> 0.7.0)
   papyrus!
   rb-fsevent (~> 0.9.1)
+  redcarpet (~> 2.2.2)
+  rocco!
   rr (~> 1.0.4)
   rspec (~> 2.11.0)
-  terminal-notifier-guard
+  terminal-notifier-guard (~> 1.5.3)
