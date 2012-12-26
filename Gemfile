@@ -20,4 +20,6 @@ gem 'terminal-notifier-guard', '~> 1.5.3'
 
 gem 'rocco', :git => 'http://github.com/dashkb/rocco'
 gem 'redcarpet', '~> 2.2.2'
-gem 'guard-rocco'
+gem 'guard-rocco', :path => '~/code/github/forks/guard-rocco'
+
+gem 'guard-sass', '~> 1.0.0'

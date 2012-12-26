@@ -1,0 +1,71 @@
+
+@mixin solarized($flavor: "dark") {
+  $base03:  #002b36;
+  $base02:  #073642;
+  $base01:  #586e75;
+  $base00:  #657b83;
+  $base0:   #839496;
+  $base1:   #93a1a1;
+  $base2:   #eee8d5;
+  $base3:   #fdf6e3;
+  $yellow:  #b58900;
+  $orange:  #cb4b16;
+  $red:     #dc322f;
+  $magenta: #d33682;
+  $violet:  #6c71c4;
+  $blue:    #268bd2;
+  $cyan:    #2aa198;
+  $green:   #859900;
+
+  @if $flavor == "light" {
+    $temp03: $base03;
+    $temp02: $base02;
+    $temp01: $base01;
+    $temp00: $base00;
+    $base03: $base3;
+    $base02: $base2;
+    $base01: $base1;
+    $base00: $base0;
+    $base0:  $temp00;
+    $base1:  $temp01;
+    $base2:  $temp02;
+    $base3:  $temp03;
+  }
+
+  $back: $base03;
+
+  .code, #background {
+    background-color: $back;
+  }
+
+  .code {
+    border-top: 1px solid $base02;
+  }
+
+  // Refer to:
+  // * https://github.com/altercation/vim-colors-solarized/blob/master/colors/solarized.vim
+  // * http://pygments.org/docs/tokens/
+  .highlight {
+    color: $base0;
+    // vim: Comment
+    // pygments: Comment
+    .c, .cm, .cp, .c1, .cs { color: $base01; font-style: italic }
+    // vim: Constant
+    // pygments: Literal.String, Literal.String.Single, Literal.String.Double,
+    // Literal.String.Char, Literal.String.Heredoc, Literal.Number,
+    // Literal.Number.*,
+    .s, .s1, .s2, .sc, .sh, .ss, .m, .mf, .mh, .mi, .mo, .il { color: $cyan }
+    // vim: Identifier
+    // pygments: Name, Name.*
+    .nc, .no, .nn { color: $blue }
+    .vi { color: $orange }
+    // vim: Statement
+    // pygments: Keyword, Keyword.*
+    .k, .kc, .kd, .kn, .kr, .kt { color: $yellow }
+    .kp { color: $orange; }
+    // vim: Special
+    // pygments: Literal.String.Escape, Literal.String.Interpol,
+    // Literal.String.Other
+    .se, .si, .so { color: $magenta }
+  }
+}

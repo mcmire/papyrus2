@@ -1,0 +1,46 @@
+
+$base0:   #839496;
+$base1:   #93a1a1;
+$base2:   #eee8d5;
+$base3:   #fdf6e3;
+$base00:  #657b83;
+$base01:  #586e75;
+$base02:  #073642;
+$base03:  #002b36;
+$yellow:  #b58900;
+$orange:  #cb4b16;
+$red:     #dc322f;
+$magenta: #d33682;
+$violet:  #6c71c4;
+$blue:    #268bd2;
+$cyan:    #2aa198;
+$green:   #859900;
+
+.highlight {
+  // Keyword
+  .k { color: $green }
+  // Keyword.Constant
+  .kc { font-weight: bold }
+  // Keyword.Namespace
+  .kn { color: $red; font-weight: bold }
+  // Keyword.Type
+  .kt { font-weight: bold }
+  // Name
+  .n { color: $blue }
+  // Name.Builtin
+  .nb { color: $orange }
+  // Name.Class
+  .nc { color: $orange }
+  // Name.Tag
+  .nt { font-weight: bold }
+  // Literal
+  .l { color: $cyan }
+  // Number
+  .n { font-weight: bold }
+  // Operator.Word
+  .ow { color: $green }
+  // Comment
+  .c, .cm, .cp, .c1, .cs { color: $base1; font-style: italic }
+  // Generic
+  .g, .ge, .gr, .gi, .gp, .gs, .gu, .gt { color: $magenta }
+}
