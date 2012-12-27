@@ -1,8 +1,4 @@
-
-#require 'papyrus/block_command'
-#require 'papyrus/node_list'
-#require 'papyrus/token'
-
+# 
 module Papyrus
   class CustomBlockCommand < BlockCommand
     def initialize(*args)
