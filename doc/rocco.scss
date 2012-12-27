@@ -1,7 +1,7 @@
 /* Copied from Docco */
 
-$font-size: 16px;
-$line-height-multi: 1.6;
+$font-size: 14px;
+$line-height-multi: 1.7;
 @import "reset";
 @import "base";
 
@@ -13,8 +13,12 @@ html, body, #container {
 }
 
 body {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  /*font-family: "Times New Roman";*/
+  /*font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;*/
+  /*font-family: "Libre Baskerville";*/
+  /*font-family: Merriweather;*/
+  /*font-family: "Asap";*/
+  /*font-family: "Source Sans Pro";*/
+  font-family: "Open Sans";
   color: #333;
   margin: 0;
   padding: 0;
@@ -24,6 +28,16 @@ a {
 }
 a:visited {
   color: gray;
+}
+
+h2 {
+  font-size: $font-size * 1.6;
+  line-height: $line-height * 2;
+}
+
+h3 {
+  font-size: $font-size * 1.2;
+  line-height: $line-height * 1.5;
 }
 
 pre, tt, code {
@@ -101,12 +115,12 @@ table td {
 }
 
 .docs, .code {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: $vert-spacing;
+  padding-bottom: $vert-spacing;
 }
 
 .docs {
-  width: 40em;
+  width: 550px;
   /*min-height: 5px;*/
   /*padding: 10px 25px 1px 50px;*/
   padding-left: 50px;
@@ -121,8 +135,14 @@ table td {
   color: hsl(60, 30%, 96%);
   */
 
+  pre, p > code {
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 2px;
+  }
   pre {
-    margin-left: 2em;
+    padding: 5px 10px;
   }
 }
 
