@@ -10,6 +10,8 @@ source :rubygems
 # Import runtime dependencies
 gemspec
 
+gem 'rake', '~> 10.0.3'
+
 gem 'rspec', '~> 2.11.0'
 gem 'rr', '~> 1.0.4'
 
