@@ -43,7 +43,9 @@
     {{#sections}}
     <tr id='section-{{ section_id }}'{{#parent_index}} data-parent-index="{{.}}"{{/parent_index}}>
       <td class="docs">
-        {{{ docs }}}
+        <div>
+          {{{ docs }}}
+        </div>
       </td>
       <td class="code">
         <div class="highlight"><pre>{{{ code }}}</pre></div>

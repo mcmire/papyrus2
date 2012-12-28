@@ -7,10 +7,28 @@ module Papyrus
   class Rocco < ::Rocco
     class Render < Redcarpet::Render::HTML
       include Redcarpet::Render::SmartyPants
+
+      def block_code(code, language)
+        language ||= 'raw'
+        Pygments.highlight(code, {
+          :lexer   => language,
+          :options => {
+            :outencoding => 'utf-8'
+          }
+        })
+      end
     end
 
     def process_markdown(text)
-      @renderer ||= Redcarpet::Markdown.new(Render)
+      text.gsub!('--', '---')
+      text.gsub!(/\|\|(.+?)\|\|/, %{<span class="args">\\1</span>})
+
+      @renderer ||= Redcarpet::Markdown.new(Render,
+        :fenced_code_blocks => true,
+        # GFM
+        :no_intra_emphasis => true,
+        :tables => true
+      )
       @renderer.render(text)
     end
   end

@@ -18,59 +18,57 @@
   $green:   #859900;
 
   @if $flavor == "light" {
-    $temp03: $base03;
-    $temp02: $base02;
-    $temp01: $base01;
-    $temp00: $base00;
+    $obase03: $base03;
+    $obase02: $base02;
+    $obase01: $base01;
+    $obase00: $base00;
+
     $base03: $base3;
     $base02: $base2;
     $base01: $base1;
     $base00: $base0;
-    $base0:  $temp00;
-    $base1:  $temp01;
-    $base2:  $temp02;
-    $base3:  $temp03;
+
+    $base0:  $obase00;
+    $base1:  $obase01;
+    $base2:  $obase02;
+    $base3:  $obase03;
+
+    $cyan: rgb(81, 211, 200);
+    $violet: rgb(180, 127, 236);
   }
 
   $back: $base03;
 
-  .code, #background {
-    background-color: $back;
-  }
-
-  /*
-  .hr > .code {
-    border-top: 1px solid $base02;
-  }
-  .hr.header > .code {
-    border-top-color: $base01
-  }
-  */
-
   // Refer to:
   // * https://github.com/altercation/vim-colors-solarized/blob/master/colors/solarized.vim
   // * http://pygments.org/docs/tokens/
+
+  // This only works for .code
+  background-color: $back;
+
   .highlight {
-    color: $base0;
-    // vim: Comment
-    // pygments: Comment
+    @if $flavor == "dark" {
+      color: $base0;
+    }
+    // vim : Comment
+    // pygments : Comment
     .c, .cm, .cp, .c1, .cs { color: $base01; font-style: italic }
-    // vim: Constant
-    // pygments: Literal.String, Literal.String.Single, Literal.String.Double,
+    // vim : Constant
+    // pygments : Literal.String, Literal.String.Single, Literal.String.Double,
     // Literal.String.Char, Literal.String.Heredoc, Literal.Number,
     // Literal.Number.*,
     .s, .s1, .s2, .sc, .sh, .ss, .m, .mf, .mh, .mi, .mo, .il { color: $cyan }
-    // vim: Identifier
-    // pygments: Name, Name.*
+    // vim : Identifier
+    // pygments : Name, Name.*
     .nc, .no, .nn { color: $blue }
     .nf { color: $violet }
     .vi { color: $orange }
-    // vim: Statement
+    // vim : Statement
     // pygments: Keyword, Keyword.*
     .k, .kc, .kd, .kn, .kr, .kt { color: $yellow }
     .kp { color: $orange; }
-    // vim: Special
-    // pygments: Literal.String.Escape, Literal.String.Interpol,
+    // vim : Special
+    // pygments : Literal.String.Escape, Literal.String.Interpol,
     // Literal.String.Other
     .se, .si, .so { color: $magenta }
   }
