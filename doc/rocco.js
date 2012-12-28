@@ -14,6 +14,11 @@
           }
         }
       }
+    , addClass = function (elem, klass) {
+        var classes = elem.className.split(" ")
+        classes.push(klass)
+        elem.className = classes.join(" ")
+      }
 
   window.addEventListener('load', function () {
     var trs
@@ -31,12 +36,14 @@
         link.href = '#' + tr.getAttribute('id')
         link.innerHTML = "&#182;"
         pilcrow = document.createElement('div')
-        pilcrow.className += " pilcrow"
+        addClass(pilcrow, 'pilcrow')
         pilcrow.appendChild(link)
         // insert as the first node
         pilcrowWrapper.insertBefore(pilcrow, pilcrowWrapper.childNodes[0])
       }
     })
+
+    addClass(document.querySelector('tbody > tr:nth-child(1)'), 'description')
 
     hrs.push(document.querySelector('tbody > tr:nth-child(2)'))
 
@@ -54,12 +61,15 @@
     })
 
     each(hrs, function (hr) {
-      hr.className += ' hr'
+      addClass(hr, 'hr')
+      if (hr.previousElementSibling) {
+        addClass(hr.previousElementSibling, 'pre-hr')
+      }
     })
     each(headerRows, function(tr) {
-      tr.className += ' header'
+      addClass(tr, 'header')
       if (tr.previousElementSibling) {
-        tr.previousElementSibling.className += ' pre-header'
+        addClass(tr.previousElementSibling, 'pre-header')
       }
     })
   })

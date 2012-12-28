@@ -41,7 +41,7 @@
   </thead>
   <tbody>
     {{#sections}}
-    <tr id='section-{{ section_id }}'>
+    <tr id='section-{{ section_id }}'{{#parent_index}} data-parent-index="{{.}}"{{/parent_index}}>
       <td class="docs">
         {{{ docs }}}
       </td>

@@ -33,6 +33,7 @@ a:visited {
 h1, h2, h3, h4 {
   margin-bottom: $vert-spacing;
   border-bottom: 1px solid #ddd;
+  /*letter-spacing: -1px;*/
 }
 
 h2 {
@@ -128,34 +129,30 @@ table td {
   outline: 0;
 }
 
-.docs {
+.docs, .code {
   padding-left: $vert-spacing * 2;
   padding-right: $vert-spacing * 2;
 }
-.code {
-  padding-left: $vert-spacing * 2;
-  padding-right: $vert-spacing * 2;
+tbody > tr[data-parent-index] .docs {
+  padding-left: $vert-spacing * 3;
 }
 
 .pre-header > .docs,
 .pre-header > .code {
   padding-bottom: $vert-spacing;
 }
-.hr > .docs,
-.hr > .code {
-  padding-top: $vert-spacing;
+.pre-hr > .docs,
+.pre-hr > .code {
+  padding-bottom: $vert-spacing;
+}
+.header > .code {
+  padding-top: 10px;
 }
 /*
-.hr > .docs {
-  border-top: 1px solid #efefef
-}
-.hr.header > .docs {
-  border-top-color: #999
-}
-*/
 .hr > .docs .pilcrow {
   top: $vert-spacing;
 }
+*/
 
 .docs {
   width: 550px;
