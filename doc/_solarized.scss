@@ -38,9 +38,11 @@
     background-color: $back;
   }
 
-  .code {
-    border-top: 1px solid $base02;
+  /*
+  .description .code {
+    border-bottom: 1px solid $base02;
   }
+  */
 
   // Refer to:
   // * https://github.com/altercation/vim-colors-solarized/blob/master/colors/solarized.vim

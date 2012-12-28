@@ -30,14 +30,20 @@ a:visited {
   color: gray;
 }
 
+h1 {
+  margin-bottom: $vert-spacing;
+}
+
 h2 {
-  font-size: $font-size * 1.6;
-  line-height: $line-height * 2;
+  font-size: $font-size * 1.5;
+  line-height: $line-height * 1.5;
+  margin-bottom: $vert-spacing;
 }
 
 h3 {
-  font-size: $font-size * 1.2;
+  font-size: $font-size * 1.3;
   line-height: $line-height * 1.5;
+  margin-bottom: $vert-spacing;
 }
 
 pre, tt, code {
@@ -46,8 +52,13 @@ pre, tt, code {
   /*padding: 0;*/
 }
 
+$container-padding-left: $vert-spacing;
+
 #container {
   position: relative;
+  padding-top: $vert-spacing;
+  padding-bottom: $vert-spacing;
+  padding-left: $container-padding-left;
 }
 
 #background {
@@ -55,7 +66,7 @@ pre, tt, code {
   width: 100%;
   height: 100%;
   top: 0;
-  left: 0;
+  left: $container-padding-left;
   z-index: -1;
 }
 #background .docs {
@@ -114,26 +125,36 @@ table td {
   outline: 0;
 }
 
-.docs, .code {
+/*
+th.docs:first-child, th.code:first-child {
   padding-top: $vert-spacing;
+}
+.docs:last-child, .code:last-child {
   padding-bottom: $vert-spacing;
 }
+*/
+.docs, .code {
+  padding-left: $vert-spacing;
+  padding-right: $vert-spacing;
+}
+
+/*
+.description + tr > .docs,
+.description + tr > .code {
+  padding-top: $vert-spacing;
+}
+.description .docs {
+  border-bottom: 1px solid #e5e5e5;
+}
+*/
 
 .docs {
   width: 550px;
-  /*min-height: 5px;*/
-  /*padding: 10px 25px 1px 50px;*/
-  padding-left: 50px;
-  padding-right: 25px;
-  overflow-x: hidden;
+  /*overflow-x: hidden;*/
   vertical-align: top;
   text-align: left;
   background-color: white;
-  /*background-color: #f5f5ff;*/
-  /*
-  background-color: hsl(200, 5%, 11%);
-  color: hsl(60, 30%, 96%);
-  */
+  position: relative;
 
   pre, p > code {
     background-color: #fafafa;
@@ -149,58 +170,31 @@ table td {
 .code {
   font-size: 12px;
 }
-/*
-tr:nth-child(even) > .code {
-  background-color: hsl(240, 96%, 96%);
-}
-*/
 
 .code {
-  /*padding: 14px 15px 16px 25px;*/
-  padding-left: 25px;
-  padding-right: 50px;
-  /*width: 100%;*/
   vertical-align: top;
-  /*background: hsl(240, 100%, 98%);*/
-  /*background: #ddd;*/
-  border-left: 1px solid #ddd;
+  /*border-left: 1px solid #ddd;*/
 }
-.docs {
-  border-top: 1px solid #e5e5e5;
-}
+
 /*
-tr:nth-child(even) > .docs {
-  background-color: hsl(0, 0%, 98%);
-}
-*/
-/*
-.docs {
-  pre {
-    margin: 15px 0 15px;
-    padding-left: 15px;
-  }
-  p tt, p code {
-    background: #f8f8ff;
-    border: 1px solid #dedede;
-    font-size: 12px;
-    padding: 0 0.2em;
-  }
-}
-*/
 .pilwrap {
   position: relative;
+  display: inline-block;
+  vertical-align: middle
 }
+*/
 .pilcrow {
   font: 12px Arial;
-  line-height: $line-height;
-  text-decoration: none;
-  color: #454545;
-  position: absolute;
-  /*top: 3px;*/
-  left: -20px;
-  /*padding: 1px 2px;*/
+  line-height: inherit;
   opacity: 0;
   -webkit-transition: opacity 0.2s linear;
+  position: absolute;
+  top: 0px;
+  left: -1px;
+}
+.pilcrow a {
+  text-decoration: none;
+  color: #454545;
 }
 td.docs:hover .pilcrow {
   opacity: 1;

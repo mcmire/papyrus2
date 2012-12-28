@@ -34,8 +34,9 @@ guard 'sass', :input => "doc", :output => "doc/rocco"
 guard 'rocco', {
   :rocco_class => Papyrus::Rocco,
   :dir => 'doc/rocco',
+  :template_file => "#{root}/doc/rocco.mustache",
   :stylesheet => "file://#{root}/doc/rocco/rocco.css",
-  :template_file => "#{root}/doc/rocco.mustache"
+  :javascript => "file://#{root}/doc/rocco.js",
 } do
   watch(%r{^lib/(.*)\.rb$})
 end
