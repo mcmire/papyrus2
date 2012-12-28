@@ -20,7 +20,7 @@ gem 'growl', '~> 1.0.1'
 gem 'rb-fsevent', '~> 0.9.1'
 gem 'terminal-notifier-guard', '~> 1.5.3'
 
-gem 'rocco', :git => 'http://github.com/dashkb/rocco'
+gem 'rocco', :path => '~/code/github/forks/rocco'
 gem 'redcarpet', '~> 2.2.2'
 gem 'guard-rocco', :path => '~/code/github/forks/guard-rocco'
 

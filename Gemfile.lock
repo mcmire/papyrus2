@@ -1,12 +1,3 @@
-GIT
-  remote: http://github.com/dashkb/rocco
-  revision: e2d1396bcc494088b983e7a2c40214656fdadd8d
-  specs:
-    rocco (0.8.2)
-      mustache
-      pygments.rb
-      redcarpet (~> 2)
-
 PATH
   remote: .
   specs:
@@ -18,6 +9,14 @@ PATH
     guard-rocco (0.0.4)
       guard (>= 0.4.0)
       rocco
+
+PATH
+  remote: ~/code/github/forks/rocco
+  specs:
+    rocco (0.8.2)
+      mustache
+      pygments.rb
+      redcarpet (~> 2)
 
 GEM
   remote: http://rubygems.org/
