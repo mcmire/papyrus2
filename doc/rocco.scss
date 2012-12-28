@@ -8,7 +8,7 @@ $line-height-multi: 1.7;
 @import "solarized";
 @include solarized($flavor: "dark");
 
-html, body, #container {
+html, body {
   height: 100%;
 }
 
@@ -30,44 +30,41 @@ a:visited {
   color: gray;
 }
 
-h1 {
+h1, h2, h3, h4 {
   margin-bottom: $vert-spacing;
+  border-bottom: 1px solid #ddd;
 }
 
 h2 {
   font-size: $font-size * 1.5;
   line-height: $line-height * 1.5;
-  margin-bottom: $vert-spacing;
 }
 
 h3 {
   font-size: $font-size * 1.3;
   line-height: $line-height * 1.5;
-  margin-bottom: $vert-spacing;
+  text-transform: uppercase;
 }
 
 pre, tt, code {
   font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
-  /*margin: 0;*/
-  /*padding: 0;*/
 }
 
 #container {
   position: relative;
-  padding-top: $vert-spacing;
-  padding-bottom: $vert-spacing;
+  height: 100%;
 }
 
 #background {
   position: fixed;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   top: 0;
   left: 0;
   z-index: -1;
 }
 #background .docs {
-  height: 100%;
+  min-height: 100%;
 }
 
 #jump_to, #jump_page {
@@ -114,7 +111,16 @@ pre, tt, code {
 table {
   margin: 0;
   width: 100%;
-  /*min-height: 100%;*/
+  height: 100%;
+}
+
+table > thead .docs,
+table > thead .code {
+  padding-top: $vert-spacing;
+}
+table > tfoot .docs,
+table > tfoot .code {
+  padding-bottom: $vert-spacing * 2;
 }
 
 table td {
@@ -124,10 +130,10 @@ table td {
 
 .docs {
   padding-left: $vert-spacing * 2;
-  padding-right: $vert-spacing;
+  padding-right: $vert-spacing * 2;
 }
 .code {
-  padding-left: $vert-spacing;
+  padding-left: $vert-spacing * 2;
   padding-right: $vert-spacing * 2;
 }
 
@@ -139,10 +145,10 @@ table td {
 .hr > .code {
   padding-top: $vert-spacing;
 }
+/*
 .hr > .docs {
   border-top: 1px solid #efefef
 }
-/*
 .hr.header > .docs {
   border-top-color: #999
 }
