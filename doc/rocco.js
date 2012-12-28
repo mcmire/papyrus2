@@ -16,9 +16,12 @@
       }
 
   window.addEventListener('load', function () {
-    var trs = document.querySelectorAll('tr[id]')
-      , firstTr = document.querySelector('tbody > tr:first-child')
+    var trs
+      , headers
+      , hrs = []
+      , headerRows = []
 
+    trs = document.querySelectorAll('tr[id]')
     each(trs, function (tr) {
       var docsElem = tr.querySelector('.docs')
         , pilcrowWrapper = docsElem.children[0]
@@ -35,7 +38,30 @@
       }
     })
 
-    firstTr.className += " description"
+    hrs.push(document.querySelector('tbody > tr:nth-child(2)'))
+
+    headers = document.querySelectorAll('.docs h2, .docs h3, .docs h4')
+    each(headers, function (header) {
+      var tr = header.parentNode.parentNode
+      hrs.push(tr)
+      headerRows.push(tr)
+    })
+    codes = document.querySelectorAll('.code pre')
+    each(codes, function (code) {
+      if (/\s*(?:def \w+|attr_reader|attr_writer|attr_accessor)/.test(code.innerText)) {
+        hrs.push(code.parentNode.parentNode.parentNode)
+      }
+    })
+
+    each(hrs, function (hr) {
+      hr.className += ' hr'
+    })
+    each(headerRows, function(tr) {
+      tr.className += ' header'
+      if (tr.previousElementSibling) {
+        tr.previousElementSibling.className += ' pre-header'
+      }
+    })
   })
 })()
 
