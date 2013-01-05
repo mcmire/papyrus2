@@ -198,14 +198,24 @@ table td {
     background-color: #fcfcfc;
     border: 1px solid #dedede;
     border-radius: 3px;
-    padding: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
 
   code, tt {
-    font-size: 13px;
+    font-size: 90%;
+    /*
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 2px;
+    margin-right: 2px;
+    line-height: $line-height - 6px;
+    */
   }
   pre {
-    font-size: 12px;
+    font-size: 95%;
   }
 
   pre {
@@ -245,6 +255,11 @@ table td {
       position: relative;
       top: 3px;
     }
+  }
+
+  blockquote {
+    border-left: 2px solid #ddd;
+    padding-left: 10px;
   }
 }
 
