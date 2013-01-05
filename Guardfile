@@ -25,9 +25,9 @@ module Papyrus
 
       @renderer ||= Redcarpet::Markdown.new(Render,
         :fenced_code_blocks => true,
-        # GFM
-        :no_intra_emphasis => true,
-        :tables => true
+        :no_intra_emphasis => true, # GFM
+        :tables => true,
+        :space_after_headers => true
       )
       @renderer.render(text)
     end
