@@ -7,7 +7,6 @@ $line-height-multi: 1.7;
 
 @import "solarized";
 
-
 html, body {
   height: 100%;
 }
@@ -74,28 +73,65 @@ ul {
   top: 0;
   left: 0;
   z-index: -1;
+  background-color: black;
 }
 #background .docs {
   min-height: 100%;
 }
 
-#jump_to, #jump_page {
+#nav-wrapper {
   background: white;
-  -webkit-box-shadow: 0 0 25px #777; -moz-box-shadow: 0 0 25px #777;
+  -webkit-box-shadow: 0 0 10px #777; -moz-box-shadow: 0 0 10px #777;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
-  font: 10px Arial;
+  font-size: 11px;
   line-height: 1;
-  text-transform: uppercase;
   cursor: pointer;
   text-align: right;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: $vert-spacing * 2;
+  padding: 8px 10px;
 }
+#nav {
+  text-transform: uppercase;
+  padding: 5px;
+}
+#nav-links {
+  display: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    list-style: none;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+  }
+  .source {
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+  }
+  .source:hover {
+    text-decoration: underline;
+  }
+}
+#nav-wrapper.active {
+  #nav { display: none; }
+  #nav-links { display: block; }
+}
+
+/*
 #jump_to, #jump_wrapper {
   position: fixed;
   right: 50px;
   top: 0;
   padding: 5px 10px;
 }
+*/
+/*
 #jump_wrapper {
   padding: 0;
   display: none;
@@ -107,28 +143,18 @@ ul {
   padding: 5px 0 3px;
   margin: 0 0 25px 25px;
 
-  .source {
-    display: block;
-    padding: 5px 10px;
-    text-decoration: none;
-    border-top: 1px solid #eee;
-  }
-  .source:hover {
-    background: #f5f5ff;
-  }
-  .source:first-child {
-  }
 }
+*/
 
 table {
   margin: 0;
-  width: 100%;
+  /*width: 100%;*/
   height: 100%;
 }
 
 table > thead {
   .docs, .code {
-    padding-top: $vert-spacing;
+    padding-top: $vert-spacing + 35px;
   }
 }
 table > tfoot {
@@ -155,7 +181,7 @@ table td {
 .docs {
   @include solarized($flavor: "light");
 
-  width: 550px;
+  width: 45em;
   /*overflow-x: hidden;*/
   vertical-align: top;
   text-align: left;
@@ -186,22 +212,30 @@ table td {
     padding: 5px 10px;
   }
 
+  > div {
+    position: relative
+  }
+
   tbody > tr[data-parent-index] & {
     font-size: 95%;
     /*padding-left: $vert-spacing * 2;*/
 
     > div {
+      margin-left: 29px;
       /*border-left: 2px solid silver;*/
       /*padding-left: $vert-spacing / 2;*/
+      /*
       border-radius: 3px;
       border: 1px solid #ddd;
       padding: 5px 7px;
       background-color: rgb(255,255,239);
-      margin-left: 29px;
+      */
 
+      /*
       p:last-child {
         margin-bottom: 0
       }
+      */
     }
 
     .note {
@@ -221,7 +255,7 @@ table td {
   -webkit-transition: opacity 0.2s linear;
   position: absolute;
   top: 0px;
-  left: $vert-spacing;
+  left: -$vert-spacing;
 
   a {
     text-decoration: none;
@@ -235,12 +269,25 @@ table td {
 
 .code {
   @include solarized($flavor: "dark");
+  background-color: solarized-back($flavor: "dark");
 
   font-size: 12px;
   vertical-align: top;
+  width: 50em;
+  overflow-x: auto;
 
   .header > & {
     padding-top: 10px;
   }
+
+  pre {
+    white-space: pre-wrap;
+  }
+
+  /*
+  table & {
+    border-right: 1px solid pink;
+  }
+  */
 }
 

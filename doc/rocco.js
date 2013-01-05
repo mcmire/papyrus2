@@ -14,29 +14,77 @@
           }
         }
       }
+    , _classNameToClassHash = function (className) {
+        var hash = {}
+          , classes = className.split(" ")
+        each(classes, function (klass) {
+          hash[klass] = 1
+        })
+        return hash
+      }
+    , _classHashToClassName = function (classHash) {
+        var classes = []
+        each(classHash, function (k, _) {
+          classes.push(k)
+        })
+        return classes.join(" ")
+      }
     , addClass = function (elem, klass) {
-        var classes
+        var classHash
         if ('classList' in elem) {
           elem.classList.add(klass)
         } else {
-          classes = elem.className.split(" ")
-          hash = {}
-          newClasses = []
-          classes.push(klass)
-          each(classes, function (cls) {
-            cls = cls.trim()
-            if (!(cls in hash)) {
-              hash[cls] = 1
-              newClasses.push(cls)
-            }
-          })
-          elem.className = newClasses.join(" ")
+          classHash = _classNameToClassHash(elem.className)
+          classHash[klass] = 1
+          return _classHashToClassName(clashHash)
+        }
+      }
+    , removeClass = function (elem, klass) {
+        var classHash
+        if ('classList' in elem) {
+          elem.classList.remove(klass)
+        } else {
+          classHash = _classNameToClassHash(elem.className)
+          delete classHash[klass]
+          return _classHashToClassName(classHash)
+        }
+      }
+    , hasClass = function (elem, klass) {
+        var classHash
+        if ('classList' in elem) {
+          return elem.classList.contains(klass)
+        } else {
+          classHash = _classNameToClassHash(elem.className)
+          return (klass in classHash)
+        }
+      }
+    , toggleClass = function (elem, klass) {
+        var classHash
+        if ('classList' in elem) {
+          return elem.classList.toggle(klass)
+        } else {
+          classHash = _classNameToClassHash(elem.className)
+          if (klass in classHash) {
+            delete classHash[klass]
+          } else {
+            classHash[klass] = 1
+          }
+          return _classHashToClassName(classHash)
         }
       }
 
   window.addEventListener('load', function () {
     var hrs = []
       , headerRows = []
+      , navWrapper = document.querySelector('#nav-wrapper')
+
+    navWrapper.addEventListener('click', function (e) {
+      addClass(this, 'active')
+      e.stopPropagation()
+    })
+    window.addEventListener('click', function () {
+      removeClass(navWrapper, 'active')
+    })
 
     /*
     each(document.querySelectorAll('tr[data-parent-index] > .docs > div'), function (div) {
@@ -52,7 +100,7 @@
 
     each(document.querySelectorAll('tr[id]'), function (tr) {
       var docsElem = tr.querySelector('.docs')
-        , pilcrowWrapper = docsElem.children[0].children[0]
+        , pilcrowWrapper = docsElem.children[0]//.children[0]
         , pilcrow, link
       if (pilcrowWrapper && pilcrowWrapper.childNodes.length) {
         link = document.createElement('a')

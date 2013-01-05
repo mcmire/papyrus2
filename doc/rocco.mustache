@@ -15,22 +15,22 @@
 <body>
 
 <div id="container">
-  {{#sources?}}
-  <div id="jump_to">
-    Jump To &hellip;
-    <div id="jump_wrapper">
-      <div id="jump_page">
-        {{#sources}}
-          <a class="source" href="{{ url }}">{{ basename }}</a>
-        {{/sources}}
-      </div>
-    </div>
-  </div>
-  {{/sources?}}
-
   <div id="background">
     <div class="docs"></div>
   </div>
+
+  {{#sources?}}
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+      {{#sources}}
+        <li><a class="source" href="{{ url }}">{{ basename }}</a></li>
+      {{/sources}}
+    </ul>
+  </div>
+  {{/sources?}}
 
   <table cellspacing="0" cellpadding="0">
   <thead>

@@ -1,75 +1,169 @@
 
-@mixin solarized($flavor: "dark") {
-  $base03:  #002b36;
-  $base02:  #073642;
-  $base01:  #586e75;
-  $base00:  #657b83;
-  $base0:   #839496;
-  $base1:   #93a1a1;
-  $base2:   #eee8d5;
-  $base3:   #fdf6e3;
-  $yellow:  #b58900;
-  $orange:  #cb4b16;
-  $red:     #dc322f;
-  $magenta: #d33682;
-  $violet:  #6c71c4;
-  $blue:    #268bd2;
-  $cyan:    #2aa198;
-  $green:   #859900;
+// Sources:
+// * https://github.com/altercation/vim-colors-solarized/blob/master/colors/solarized.vim
+// * http://pygments.org/docs/tokens/
 
+$solarized-base03:  #002b36;
+$solarized-base02:  #073642;
+$solarized-base01:  #586e75;
+$solarized-base00:  #657b83;
+$solarized-base0:   #839496;
+$solarized-base1:   #93a1a1;
+$solarized-base2:   #eee8d5;
+$solarized-base3:   #fdf6e3;
+$solarized-yellow:  #b58900;
+$solarized-orange:  #cb4b16;
+$solarized-red:     #dc322f;
+$solarized-magenta: #d33682;
+$solarized-blue:    #268bd2;
+$solarized-green:   #859900;
+$solarized-cyan:    #2aa198;
+$solarized-cyan-light: rgb(81, 211, 200);
+$solarized-violet:  #6c71c4;
+$solarized-violet-light: rgb(180, 127, 236);
+
+@function solarized-base03($flavor) {
   @if $flavor == "light" {
-    $obase03: $base03;
-    $obase02: $base02;
-    $obase01: $base01;
-    $obase00: $base00;
-
-    $base03: $base3;
-    $base02: $base2;
-    $base01: $base1;
-    $base00: $base0;
-
-    $base0:  $obase00;
-    $base1:  $obase01;
-    $base2:  $obase02;
-    $base3:  $obase03;
-
-    $cyan: rgb(81, 211, 200);
-    $violet: rgb(180, 127, 236);
+    @return $solarized-base3;
+  } @else {
+    @return $solarized-base03;
   }
+}
+@function solarized-base3($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base03;
+  } @else {
+    @return $solarized-base3;
+  }
+}
 
-  $back: $base03;
+@function solarized-base02($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base2;
+  } @else {
+    @return $solarized-base02;
+  }
+}
+@function solarized-base2($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base02;
+  } @else {
+    @return $solarized-base2;
+  }
+}
 
-  // Refer to:
-  // * https://github.com/altercation/vim-colors-solarized/blob/master/colors/solarized.vim
-  // * http://pygments.org/docs/tokens/
+@function solarized-base01($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base1;
+  } @else {
+    @return $solarized-base01;
+  }
+}
+@function solarized-base1($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base01;
+  } @else {
+    @return $solarized-base1;
+  }
+}
 
-  // This only works for .code
-  background-color: $back;
+@function solarized-base00($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base0;
+  } @else {
+    @return $solarized-base00;
+  }
+}
+@function solarized-base0($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-base00;
+  } @else {
+    @return $solarized-base0;
+  }
+}
 
+@function solarized-yellow($flavor) {
+  @return $solarized-yellow;
+}
+@function solarized-orange($flavor) {
+  @return $solarized-orange;
+}
+@function solarized-red($flavor) {
+  @return $solarized-red;
+}
+@function solarized-magenta($flavor) {
+  @return $solarized-magenta;
+}
+@function solarized-violet($flavor) {
+  @return $solarized-violet;
+}
+@function solarized-blue($flavor) {
+  @return $solarized-blue;
+}
+@function solarized-green($flavor) {
+  @return $solarized-green;
+}
+@function solarized-cyan($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-cyan-light;
+  } @else {
+    @return $solarized-cyan;
+  }
+}
+@function solarized-violet($flavor) {
+  @if $flavor == "light" {
+    @return $solarized-violet-light;
+  } @else {
+    @return $solarized-violet;
+  }
+}
+
+@function solarized-back($flavor) {
+  @return solarized-base03($flavor);
+}
+
+@mixin solarized($flavor: "dark") {
   .highlight {
     @if $flavor == "dark" {
-      color: $base0;
+      color: solarized-base0($flavor);
     }
     // vim : Comment
     // pygments : Comment
-    .c, .cm, .cp, .c1, .cs { color: $base01; font-style: italic }
+    .c, .cm, .cp, .c1, .cs {
+      color: solarized-base01($flavor);
+      font-style: italic
+    }
     // vim : Constant
     // pygments : Literal.String, Literal.String.Single, Literal.String.Double,
     // Literal.String.Char, Literal.String.Heredoc, Literal.Number,
     // Literal.Number.*,
-    .s, .s1, .s2, .sc, .sh, .ss, .m, .mf, .mh, .mi, .mo, .il { color: $cyan }
+    .s, .s1, .s2, .sc, .sh, .ss, .m, .mf, .mh, .mi, .mo, .il {
+      color: solarized-cyan($flavor);
+    }
     // vim : Identifier
     // pygments : Name, Name.*
-    .nc, .no, .nn { color: $blue }
-    .nf { color: $violet }
-    .vi { color: $orange }
+    .nc, .no, .nn {
+      color: solarized-blue($flavor);
+    }
+    .nf {
+      color: solarized-violet($flavor);
+    }
+    .vi {
+      color: solarized-orange($flavor);
+    }
     // vim : Statement
     // pygments: Keyword, Keyword.*
-    .k, .kc, .kd, .kn, .kr, .kt { color: $yellow }
-    .kp { color: $orange; }
+    .k, .kc, .kd, .kn, .kr, .kt {
+      color: solarized-yellow($flavor);
+    }
+    .kp {
+      color: solarized-orange($flavor);
+    }
     // vim : Special
     // pygments : Literal.String.Escape, Literal.String.Interpol,
     // Literal.String.Other
-    .se, .si, .so { color: $magenta }
+    .se, .si, .so {
+      color: solarized-magenta($flavor);
+    }
   }
 }
