@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>context_item.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>context_item.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>During the parsing process, an AST gets built. As its name suggests, this is a
+tree of nodes, where each node points to its parent and eventually all the way
+back to the root Document object. Certain nodes represent variable scopes, or
+contexts, in the text document itself and therefore hold values. These nodes
+gain this behavior by including the ContextItem mixin. With it, you can
+retrieve and set these values inside the node by name. Setting a value is
+straightforward: the value just gets stored inside a hash map along with its
+key. Retrieving a value is intelligent: if the value cannot be found within
+the hash map, we go up the tree until we find another node that includes the
+ContextItem mixin, and look there. You also have the option of plugging in
+another object (an array, hash, or instance of some other class) as an
+alternate data source.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="nb">require</span> <span class="s1">&#39;forwardable&#39;</span>
+
+<span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">module</span> <span class="nn">ContextItem</span>
+    <span class="kp">extend</span> <span class="no">Forwardable</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_methods'>
+      <td class="docs">
+        <div>
+          <h2>Public methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#object='>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#object=</h4>
+
+<p>Associates an object with this node which will be used when looking up
+values.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>object</code> &mdash; Either a Hash, Array, or object of some other class.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_writer</span> <span class="ss">:object</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#object'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#object</h4>
+
+<p>Gets the object set previously.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:object</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#get'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#get</h4>
+
+<p>Searches for the given key within the source object(s) within this node.
+If the search fails here, the search continues in an ancestor node.</p>
+
+<p>The <code>key</code> here may be a simple identifier, or it may be actually be
+multiple identifiers joined with dots (think JavaScript dot notation). The
+idea here is that the source objects themselves can have multiple
+dimensions to them: an index lookup in an array may return a hash, a
+key lookup in a hash may return an array, a call on a method in an object
+may return an array, or any of these sorts of combinations. It really only
+makes sense when the final value you get back is a scalar, i.e., a string
+or a number. So, here we give you a way to reach down inside of these data
+structures to target the value you want.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key</code> &mdash; A Symbol, or a String which may or may not contain dots. If a
+Symbol or a simple String, it must not start with a number.</li>
+</ul>
+
+<p>Returns the value that matches the given key.</p>
+
+<p>Raises an UnknownVariableError if <code>key</code> does not refer to a valid
+identifier or the search fails.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6' data-parent-index="4">
+      <td class="docs">
+        <div>
+          <p>FIXME: Normalize the key before looking it up</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">to_s</span>
+      <span class="k">raise</span> <span class="no">UnknownVariableError</span> <span class="k">if</span> <span class="n">key</span> <span class="o">=~</span> <span class="sr">/^\d/</span>
+
+      <span class="n">first</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+      <span class="n">value</span> <span class="o">=</span> <span class="n">_get_primary_part</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">value</span> <span class="k">unless</span> <span class="n">rest</span> <span class="o">&amp;&amp;</span> <span class="n">value</span>
+
+      <span class="n">key_parts</span> <span class="o">=</span> <span class="o">[</span><span class="n">first</span><span class="o">]</span>
+      <span class="n">value_so_far</span> <span class="o">=</span> <span class="n">value</span>
+      <span class="n">rest</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="o">|</span>
+        <span class="n">key_parts</span> <span class="o">&lt;&lt;</span> <span class="n">k</span>
+        <span class="n">key_so_far</span> <span class="o">=</span> <span class="n">key_parts</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">value_so_far</span> <span class="o">=</span> <span class="n">_get_secondary_part</span><span class="p">(</span><span class="n">key_so_far</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">value_so_far</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="n">value_so_far</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#set'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#set</h4>
+
+<p>Stores the given value in the context by the given key.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key</code> &mdash; A Symbol, or a String which may or may not contain dots. If a
+Symbol or a simple String, it must not start with a number.</li>
+<li><code>value</code> &mdash; The value you want to store. It can be anything a string,
+integer, hash, array, object.</li>
+</ul>
+
+<p>Returns nothing.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+      <span class="n">vars</span><span class="o">[</span><span class="n">key</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">end</span>
+    <span class="k">alias</span> <span class="ss">:[]=</span> <span class="ss">:set</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#remove'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#remove</h4>
+
+<p>Removes the given value from the context.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key</code> &mdash; A Symbol, or a String which may or may not contain dots. If a
+Symbol or a simple String, it must not start with a number.</li>
+</ul>
+
+<p>Returns nothing.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9' data-parent-index="7">
+      <td class="docs">
+        <div>
+          <p>TODO: Normalize the key before deleting</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">vars</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#include?'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#include?</h4>
+
+<p>Determines whether someone has set a value on this node.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key</code> &mdash; A Symbol, or a String which may or may not contain dots. If a
+Symbol or a simple String, it must not start with a number.</li>
+</ul>
+
+<p>Returns true or false.</p>
+
+<p><em>Aliased to:</em> #key?, #has_key?</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">include?</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+      <span class="n">vars</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="k">alias</span> <span class="ss">:key?</span> <span class="ss">:include?</span>
+    <span class="k">alias</span> <span class="ss">:has_key?</span> <span class="ss">:include?</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#vars'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#vars</h4>
+
+<p>Provides easy access to all the variables stored in this context.</p>
+
+<p>Returns a Hash.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">vars</span>
+      <span class="vi">@vars</span> <span class="o">||=</span> <span class="p">{}</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#vars='>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#vars=</h4>
+
+<p>Sets the hash of values within this context, converting keys to strings.</p>
+
+<p>Returns a Hash.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">vars</span><span class="o">=</span><span class="p">(</span><span class="n">vars</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-13' data-parent-index="11">
+      <td class="docs">
+        <div>
+          <p>TODO: Normalize keys</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="vi">@vars</span> <span class="o">=</span> <span class="n">vars</span><span class="o">.</span><span class="n">stringify_keys</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#parser'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#parser</h4>
+
+<p>Provides easy access to the root Parser object.</p>
+
+<p>Returns a Parser object if this node has a parent. For the root Document
+object, this returns nil.</p>
+
+<p>(NOTE: This is also a method in Node.)</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">parser</span>
+      <span class="p">(</span><span class="n">parent</span> <span class="o">||</span> <span class="no">NullObject</span><span class="o">.</span><span class="n">new</span><span class="p">)</span><span class="o">.</span><span class="n">parser</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#true?'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#true?</h4>
+
+<p>Determines whether a value is stored in the context and has a truthy
+value.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key</code> &mdash; A Symbol, or a String which may or may not contain dots. If a
+Symbol or a simple String, it must not start with a number.</li>
+</ul>
+
+<p>Returns false if the given variable is not found in the context or has a
+falsy value, otherwise returns true.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">true?</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+      <span class="o">!!</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Private_methods'>
+      <td class="docs">
+        <div>
+          <h2>Private methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#_get_primary_part'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#_get_primary_part</h4>
+
+<p>This method resolves a uni-part key, or the first part of a multi-part
+key. We look up the keypart in these places, in this order:</p>
+
+<ol>
+<li>This context</li>
+<li>@object</li>
+<li>@parent</li>
+</ol>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key</code> &mdash; The String whole of a uni-part key or the first part of a
+multi-part key.</li>
+<li><code>whole_key</code> &mdash; The entire key which is being resolved.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_get_primary_part</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">whole_key</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">vars</span><span class="o">.</span><span class="n">has_key?</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">vars</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="vi">@object</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="vi">@object</span><span class="o">.</span><span class="n">has_key?</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="vi">@object</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="vi">@object</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="vi">@object</span><span class="o">.</span><span class="n">has_key?</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span>
+        <span class="vi">@object</span><span class="o">[</span><span class="n">key</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="vi">@object</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span>
+        <span class="vi">@object</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+      <span class="k">elsif</span> <span class="vi">@parent</span>
+        <span class="vi">@parent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="k">raise</span> <span class="no">UnknownVariableError</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ContextItem#_get_secondary_part'>
+      <td class="docs">
+        <div>
+          <h4>ContextItem#_get_secondary_part</h4>
+
+<p>This method resolves any part after the first part of a multi-part key.
+We look up the keypart in these places, in this order:</p>
+
+<ol>
+<li>This context</li>
+<li><code>value_so_far</code></li>
+</ol>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>key_so_far</code> &mdash; Before resolving the multi-part key we split it up and
+then build it back up as we process it; this is the key that&#39;s been built
+up so far, a String.</li>
+<li><code>key</code> &mdash; The entire key, a String.</li>
+<li><code>value_so_far</code> &mdash; The value of <code>key_so_far</code> (anything).</li>
+</ul>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_get_secondary_part</span><span class="p">(</span><span class="n">key_so_far</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value_so_far</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">vars</span><span class="o">.</span><span class="n">has_key?</span><span class="p">(</span><span class="n">key_so_far</span><span class="p">)</span>
+        <span class="n">vars</span><span class="o">[</span><span class="n">key_so_far</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="n">value_so_far</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
+        <span class="n">value_so_far</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="n">value_so_far</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">key</span> <span class="o">=~</span> <span class="sr">/^\d+$/</span> <span class="c1"># Array</span>
+        <span class="n">value_so_far</span><span class="o">[</span><span class="n">key</span><span class="o">.</span><span class="n">to_i</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="n">value_so_far</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="c1"># Just a method</span>
+        <span class="n">value_so_far</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="k">raise</span> <span class="no">UnknownVariableError</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

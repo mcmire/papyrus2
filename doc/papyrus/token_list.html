@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>token_list.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>token_list.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class="docs">
+        <div>
+          <p>require &#39;papyrus/token&#39;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class="docs">
+        <div>
+          <p>A TokenList is, well, a list of tokens. In fact it&#39;s nothing more than an
+Array that has the ability to step through its items one at a time and know
+which item it&#39;s currently on.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="k">class</span> <span class="nc">TokenList</span> <span class="o">&lt;</span> <span class="o">::</span><span class="nb">Array</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Create a new TokenList using the given array.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">[]</span><span class="p">(</span><span class="o">*</span><span class="n">list</span><span class="p">)</span>
+      <span class="n">arr</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">new</span>
+      <span class="n">arr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+      <span class="n">arr</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Create a new TokenList.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize</span>
+      <span class="vi">@pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>The token pointer, i.e., the index of the token that&#39;s currently selected.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_accessor</span> <span class="ss">:pos</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>If we&#39;re currently inside a sub and the last item on this TokenList is
+another TokenList, adds the given token to that TokenList, otherwise adds
+the token to the main TokenList.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+      <span class="k">if</span> <span class="no">TokenList</span> <span class="o">===</span> <span class="nb">self</span><span class="o">.</span><span class="n">last</span> <span class="ow">and</span> <span class="ow">not</span> <span class="ss">Token</span><span class="p">:</span><span class="ss">:RightBracket</span> <span class="o">===</span> <span class="nb">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">last</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">last</span> <span class="o">&lt;&lt;</span> <span class="n">token</span>
+      <span class="k">else</span>
+        <span class="nb">self</span> <span class="o">&lt;&lt;</span> <span class="n">token</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Increment the token pointer and returns the token at that index.
+Whitespace tokens will be skipped over.</p>
+
+<p>If @stash_curr_on_advance is true, everything that&#39;s encountered will be
+stored in the @stash, even whitespace.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">advance</span>
+      <span class="vi">@pos</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="nb">self</span><span class="o">[</span><span class="vi">@pos</span><span class="o">]</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Get the currently selected token.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">curr</span>
+      <span class="nb">self</span><span class="o">[</span><span class="vi">@pos</span><span class="o">]</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Get the token following the current one.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">next</span>
+      <span class="nb">self</span><span class="o">[</span><span class="vi">@pos</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Get the token before the current one.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">prev</span>
+      <span class="nb">self</span><span class="o">[</span><span class="vi">@pos</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Ensuring that this TokenList doesn&#39;t have any sub-TokenLists, join
+all the Tokens into a single string.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">to_s</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">flatten</span><span class="o">.</span><span class="n">join</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

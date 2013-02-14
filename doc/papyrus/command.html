@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>command.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>command.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>A Command is a Node that represents a substitution in the source template,
+where the sub has a dynamic value rather than a static one. You can think of
+this type of sub as a function &mdash; it can accept arguments and you naturally
+have much greater control over the return value.</p>
+
+<p>Note the concept of modifiers here. Although unused at the moment, this is
+intended down the road for block commands.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class="docs">
+        <div>
+          
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="nb">require</span> <span class="s1">&#39;set&#39;</span>
+
+<span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">class</span> <span class="nc">Command</span> <span class="o">&lt;</span> <span class="no">Sub</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_interface'>
+      <td class="docs">
+        <div>
+          <h2>Public interface</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command.modifier'>
+      <td class="docs">
+        <div>
+          <h4>Command.modifier</h4>
+
+<p>Defines a modifier for this command, along with an instance method which
+will hold the actions for the command.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The String name of the modifier.</li>
+<li><code>block</code> &mdash; The body of the method that will be created.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">modifier</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">to_sym</span>
+      <span class="n">define_method</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="o">&lt;&lt;</span> <span class="nb">name</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command.aka'>
+      <td class="docs">
+        <div>
+          <h4>Command.aka</h4>
+
+<p>Lets people use alternate names for this command.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li>A variadic list of Symbols.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">aka</span><span class="p">(</span><span class="o">*</span><span class="n">aliases</span><span class="p">)</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">aliases</span> <span class="c1"># init set</span>
+      <span class="vi">@aliases</span> <span class="o">+=</span> <span class="n">aliases</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command#name'>
+      <td class="docs">
+        <div>
+          <h4>Command#name</h4>
+
+<p>The Symbol name of the command.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:name</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command#args'>
+      <td class="docs">
+        <div>
+          <h4>Command#args</h4>
+
+<p>The Array of String arguments passed to the command.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:args</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command#modified_by?'>
+      <td class="docs">
+        <div>
+          <h4>Command#modified_by?</h4>
+
+<p>This is used by the Parser &mdash; if it is inside a block command and it
+encounters a sub that could be a modifier, this is how it checks that.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>modifier</code> &mdash; The Symbol name of a modifier.</li>
+<li><code>args</code> &mdash; An Array of arguments to pass to the modifier sub in
+question, if it exists.</li>
+</ul>
+
+<p>Returns false if this sub is not a block command, or if this sub does
+not have a method named after the modifier. Otherwise, returns whatever
+the modifier method returns (hopefully something truthy).</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">modified_by?</span><span class="p">(</span><span class="n">modifier</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+      <span class="k">return</span> <span class="kp">false</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">is_a?</span><span class="p">(</span><span class="no">BlockCommand</span><span class="p">)</span>
+      <span class="k">return</span> <span class="kp">false</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">respond_to?</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span>
+      <span class="nb">send</span><span class="p">(</span><span class="n">modifier</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Internal_interface'>
+      <td class="docs">
+        <div>
+          <h2>Internal interface</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command.modifiers'>
+      <td class="docs">
+        <div>
+          <h4>Command.modifiers</h4>
+
+<p>Gives you access to the modifiers which have been so far for this command.</p>
+
+<p>Returns a Set of Symbols.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">modifiers</span>
+      <span class="vi">@modifiers</span> <span class="o">||=</span> <span class="no">Set</span><span class="o">.</span><span class="n">new</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Command.aliases'>
+      <td class="docs">
+        <div>
+          <h4>Command.aliases</h4>
+
+<p>Gives you access to the aliases that have been defined for this command.</p>
+
+<p>Returns a Set of Symbols.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">aliases</span>
+      <span class="vi">@aliases</span> <span class="o">||=</span> <span class="no">Set</span><span class="o">.</span><span class="n">new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

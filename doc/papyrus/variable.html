@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>variable.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>variable.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class="docs">
+        <div>
+          <p>require &#39;papyrus/body_string&#39;
+require &#39;papyrus/errors&#39;
+require &#39;papyrus/insertion_sub&#39;
+require &#39;papyrus/sub&#39;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class="docs">
+        <div>
+          <p>A Variable is a Node that represents a simple substitution (e.g. [foo]) that
+could not be interpreted as a Command (because it doesn&#39;t exist or
+whatever). We don&#39;t actually know if the variable exists, however, until we
+evaluate it.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">Sub</span>
+    <span class="kp">include</span> <span class="no">InsertionSub</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Creates a new Variable with the given name and raw representation of the
+variable.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">raw_tokens</span><span class="p">)</span>
+      <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">downcase</span>
+      <span class="vi">@raw_tokens</span> <span class="o">=</span> <span class="n">raw_tokens</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>First we look for the variable in the parent context. If we don&#39;t find it,
+then we simply return the raw sub. If we do, however, we first run the
+value through the parser and insert the resulting nodes into the document
+that is currently being evaluated. Assuming that the value doesn&#39;t have
+any subs in it, we return the value. Note, however, that if this is a
+[body] sub, the value is wrapped in a BodyString before being returned (so
+that it can be picked out later).</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">evaluate</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="vi">@parent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="vi">@name</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">parse_and_insert_into_parent</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>the following line only gets executed if the nodes weren&#39;t inserted for some reason
+(e.g., the variable&#39;s value is empty or contains no subs)</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="vi">@name</span> <span class="o">==</span> <span class="s2">&quot;body&quot;</span> <span class="p">?</span> <span class="no">BodyString</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">:</span> <span class="n">result</span>
+    <span class="k">rescue</span> <span class="no">UnknownVariableError</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">raw_sub</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Two variables are the same if they have the same name.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+      <span class="n">other</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="vi">@name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

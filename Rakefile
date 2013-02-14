@@ -3,8 +3,6 @@ require 'fileutils'
 require 'rocco'
 
 ROOT = File.dirname(__FILE__)
-LIBPATH = File.join(ROOT, 'lib')
-DOCPATH = File.join(ROOT, 'doc')
 
 module Papyrus
   class Rocco < ::Rocco
@@ -39,12 +37,12 @@ end
 
 namespace :docs do
   def build(path)
-    target = path.sub("lib/", "").sub(%r{\.[^\.]+$}, '.html')
+    target = path.sub("lib/", "doc/").sub(%r{\.[^\.]+$}, '.html')
     rocco_options = {
       :dir => ROOT,
       :template_file => File.join(ROOT, 'support/rocco.mustache'),
-      :stylesheet => File.join(ROOT, 'rocco.css'),
-      :javascript => File.join(ROOT, 'rocco.js')
+      :stylesheet => 'http://mcmire.github.com/papyrus2/rocco.css',
+      :javascript => 'http://mcmire.github.com/papyrus2/rocco.js'
     }
     FileUtils.mkdir_p File.dirname(target)
     File.open(target, 'wb') do |fh|
@@ -54,20 +52,20 @@ namespace :docs do
   end
 
   def all_paths
-    Dir[File.join(LIBPATH, '**/*.rb')]
+    Dir[File.join('lib/**/*.rb')]
   end
 
-  def clear_lib
-    system("git rm --cached -rf #{LIBPATH} && rm -rf #{LIBPATH}")
+  task "Clean up doc generation"
+  task :clean do
+    FileUtils.rm_rf('lib')
+    FileUtils.rm_rf('doc')
   end
 
   task "Generate the docs for publishing to GitHub Pages"
-  task :generate do
-    clear_lib
-    system('git checkout master -- lib')
+  task :generate => :clean do
+    system('git checkout master -- lib && git rm --cached -r lib')
     all_paths.each {|path| build(path) }
-    system('git add *.html && git add papyrus/*.html')
-    clear_lib
+    system('git add doc')
   end
 end
 

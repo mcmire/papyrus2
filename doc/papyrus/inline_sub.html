@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>inline_sub.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>inline_sub.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>An InlineSub is one of the three types of nodes that the Parser uses to build
+the Document object. It is used to represent a sub like <code>[foo]</code>, which cannot
+be resolved immediately. We know this is an inline sub,
+because it doesn&#39;t look like a block command (otherwise it would be
+<code>[foo]..[/foo]</code>). What we <em>don&#39;t</em> know (since it doesn&#39;t have any arguments)
+is what kind of inline sub it is &mdash; does it refer to a built-in command, a
+custom command, or a variable? We can only know this at runtime. In the
+meantime, we need an object of <em>some</em> kind, so we use InlineSub as a
+placeholder.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_interface'>
+      <td class="docs">
+        <div>
+          <h2>Public interface</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">class</span> <span class="nc">InlineSub</span> <span class="o">&lt;</span> <span class="no">Sub</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Properties'>
+      <td class="docs">
+        <div>
+          <h3>Properties</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-orig_args'>
+      <td class="docs">
+        <div>
+          <h4>orig_args</h4>
+
+<p>A NodeList, this is a backup of the <code>args</code> argument given to the
+initializer. It exists because #evaluate will destructively modify @args.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:orig_args</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-evaluated_args'>
+      <td class="docs">
+        <div>
+          <h4>evaluated_args</h4>
+
+<p>The Array<String> evaluated version of @args.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:evaluated_args</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Methods'>
+      <td class="docs">
+        <div>
+          <h3>Methods</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-InlineSub#evaluate'>
+      <td class="docs">
+        <div>
+          <h4>InlineSub#evaluate</h4>
+
+<p>Resolves the sub and turns it into a String.</p>
+
+<p>This is where we determine what exactly the sub actually represents:
+a built-in command, a custom command, a variable, or nothing.</p>
+
+<p>If the sub is successfully evaluated, returns the String result of the
+evaluation, otherwise returns the String unevaluated representation of the
+command as it originally appeared in the document.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">evaluate</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8' data-parent-index="6">
+      <td class="docs">
+        <div>
+          <p>Since evaluating a NodeList can possibly mutate it, back it up.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="vi">@orig_args</span> <span class="o">=</span> <span class="vi">@args</span><span class="o">.</span><span class="n">clone</span>
+      <span class="vi">@evaluated_args</span> <span class="o">=</span> <span class="vi">@args</span><span class="o">.</span><span class="n">to_a</span>
+
+      <span class="k">if</span> <span class="n">evaluate?</span> <span class="o">&amp;&amp;</span> <span class="n">_evaluates_as_inline_command_or_variable?</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9' data-parent-index="6">
+      <td class="docs">
+        <div>
+          <p>The sub was resolved successfully. Update the raw token list to
+contain merely the result so that if an outer sub cannot be resolved,
+the result of this sub will still be retained. This works because
+there&#39;s actually a reference to this <code>raw_tokens</code> object in the
+<code>raw_tokens</code> array of the parent sub, and so changing this object
+changes that one (and any other references up the ancestry chain) too.
+Neat, eh?</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>        <span class="vi">@raw_tokens</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">[</span> <span class="ss">Token</span><span class="p">:</span><span class="ss">:Text</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@result</span><span class="p">)</span> <span class="o">]</span><span class="p">)</span>
+        <span class="k">return</span> <span class="vi">@result</span>
+      <span class="k">else</span>
+        <span class="k">return</span> <span class="n">raw_sub</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Private_interface'>
+      <td class="docs">
+        <div>
+          <h2>Private interface</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Methods'>
+      <td class="docs">
+        <div>
+          <h3>Methods</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-InlineSub#_evaluates_as_inline_command_or_variable?'>
+      <td class="docs">
+        <div>
+          <h4>InlineSub#_evaluates_as_inline_command_or_variable?</h4>
+
+<p>&hellip;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_evaluates_as_inline_command_or_variable?</span>
+      <span class="n">_evaluates_as_builtin_command?</span> <span class="ow">or</span>
+      <span class="n">_evaluates_as_custom_inline_command?</span> <span class="ow">or</span>
+      <span class="n">_evaluates_as_variable?</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-InlineSub#_evaluates_as_builtin_command?'>
+      <td class="docs">
+        <div>
+          <h4>InlineSub#_evaluates_as_builtin_command?</h4>
+
+<p>&hellip;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_evaluates_as_builtin_command?</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14' data-parent-index="12">
+      <td class="docs">
+        <div>
+          <p>We should probably put a restriction on the built-in command lookup
+because not all built-in commands may be inline. Right now we only have
+one and it is inline, so this is okay but we need to clean this up.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="k">if</span> <span class="n">_command_allowed?</span> <span class="ow">and</span> <span class="n">cmd_class</span> <span class="o">=</span> <span class="ss">Papyrus</span><span class="p">:</span><span class="ss">:Lexicon</span><span class="o">.</span><span class="n">commands</span><span class="o">[</span><span class="vi">@name</span><span class="o">]</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd_class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@name</span><span class="p">,</span> <span class="vi">@orig_args</span><span class="p">,</span> <span class="vi">@raw_tokens</span><span class="p">)</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="vi">@parent</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">wrapper</span> <span class="o">=</span> <span class="nb">self</span>
+        <span class="vi">@result</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">evaluate</span>
+        <span class="k">return</span> <span class="kp">true</span>
+      <span class="k">else</span>
+        <span class="k">return</span> <span class="kp">false</span>
+      <span class="k">end</span>
+    <span class="k">rescue</span> <span class="no">ParserError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+      <span class="k">return</span> <span class="kp">false</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">_evaluates_as_custom_inline_command?</span>
+      <span class="k">if</span> <span class="n">command_allowed?</span> <span class="o">&amp;&amp;</span> <span class="nb">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">custom_commands</span>
+        <span class="vi">@result</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">custom_commands</span><span class="o">.</span><span class="n">__call_inline_command__</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kp">true</span>
+      <span class="k">else</span>
+        <span class="k">return</span> <span class="kp">false</span>
+      <span class="k">end</span>
+    <span class="k">rescue</span> <span class="no">ParserError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+      <span class="k">return</span> <span class="kp">false</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

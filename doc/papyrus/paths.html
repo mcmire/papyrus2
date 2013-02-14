@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>paths.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>paths.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>This module provides two methods: &#39;path&#39; and &#39;libpath&#39;. These methods provide
+three things:</p>
+
+<p>1) a way to get the path for the project and the &#39;lib&#39; folder inside the
+   project;</p>
+
+<p>2) a way to get the path for a file within the project, and a file within the
+   &#39;lib&#39; folder;</p>
+
+<p>3) a way to require files within any of these two locations without having to
+   specify a full path which is free from load-path tampering.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="no">PATH</span> <span class="o">=</span> <span class="o">::</span><span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../../..&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+  <span class="no">LIBPATH</span> <span class="o">=</span> <span class="o">::</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">PATH</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Papyrus#path'>
+      <td class="docs">
+        <div>
+          <h4>Papyrus#path</h4>
+
+<p>There are three ways to call this:</p>
+
+<ol>
+<li><p><code>Papyrus.path</code> &mdash; Get the root path of the project.</p></li>
+<li><p><code>Papyrus.path(*args)</code> &mdash; Get a path of a file within this project.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li>A variadic list of Strings which will be joined to the project path.</li>
+</ul></li>
+<li><p><code>Papyrus.path(&amp;block)</code> &mdash; Provides a non-obtrusive way to require files
+within the root path.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>block</code> &mdash; The project path is added to the load path before this is
+yielded and then popped off afterward. Hence any files required in the
+block are guaranteed to look in the project path first.</li>
+</ul></li>
+</ol>
+
+<p><span class="args">Examples:</span></p>
+<div class="highlight"><pre><span class="c1"># Assuming root path is /code/papyrus</span>
+<span class="no">Papyrus</span><span class="o">.</span><span class="n">path</span>             <span class="c1">#=&gt; /code/papyrus</span>
+<span class="no">Papyrus</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s1">&#39;foo/bar&#39;</span><span class="p">)</span>  <span class="c1">#=&gt; /code/papyrus/foo/bar</span>
+<span class="c1"># These are equivalent:</span>
+<span class="no">Papyrus</span><span class="o">.</span><span class="n">path</span> <span class="p">{</span> <span class="nb">require</span> <span class="s1">&#39;foo/bar&#39;</span> <span class="p">}</span>
+<span class="nb">require</span> <span class="no">Papyrus</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s1">&#39;foo/bar&#39;</span><span class="p">)</span>
+<span class="nb">require</span> <span class="s1">&#39;/code/papyrus/foo/bar&#39;</span>
+</pre></div>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="o">::</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">PATH</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">flatten</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">block_given?</span>
+      <span class="k">begin</span>
+        <span class="vg">$LOAD_PATH</span><span class="o">.</span><span class="n">unshift</span><span class="p">(</span><span class="no">PATH</span><span class="p">)</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="k">yield</span>
+      <span class="k">ensure</span>
+        <span class="vg">$LOAD_PATH</span><span class="o">.</span><span class="n">shift</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">rv</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Papyrus.libpath'>
+      <td class="docs">
+        <div>
+          <h4>Papyrus.libpath</h4>
+
+<p>There are three ways to call this:</p>
+
+<ol>
+<li><p><code>Papyrus.libpath</code> &mdash; Get the path of the <code>lib</code> folder within the project.</p></li>
+<li><p><code>Papyrus.libpath(*args)</code> &mdash; Get a path of a file within the <code>lib</code> folder.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li>A variadic list of Strings which will be joined to the lib path.</li>
+</ul></li>
+<li><p><code>Papyrus.path(&amp;block)</code> &mdash; Provides a non-obtrusive way to require files
+within the lib path.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>block</code> &mdash; The lib path is added to the load path before this is
+yielded and then popped off afterward. Hence any files required in the
+block are guaranteed to look in the lib path first.</li>
+</ul></li>
+</ol>
+
+<p><span class="args">Examples:</span></p>
+<div class="highlight"><pre><span class="c1"># Assuming root path is /code/papyrus</span>
+<span class="no">Papyrus</span><span class="o">.</span><span class="n">libpath</span>             <span class="c1">#=&gt; /code/papyrus/lib</span>
+<span class="no">Papyrus</span><span class="o">.</span><span class="n">libpath</span><span class="p">(</span><span class="s1">&#39;foo/bar&#39;</span><span class="p">)</span>  <span class="c1">#=&gt; /code/papyrus/lib/foo/bar</span>
+<span class="c1"># These are equivalent:</span>
+<span class="no">Papyrus</span><span class="o">.</span><span class="n">libpath</span> <span class="p">{</span> <span class="nb">require</span> <span class="s1">&#39;foo/bar&#39;</span> <span class="p">}</span>
+<span class="nb">require</span> <span class="no">Papyrus</span><span class="o">.</span><span class="n">libpath</span><span class="p">(</span><span class="s1">&#39;foo/bar&#39;</span><span class="p">)</span>
+<span class="nb">require</span> <span class="s1">&#39;/code/papyrus/lib/foo/bar&#39;</span>
+</pre></div>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">libpath</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="o">::</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">LIBPATH</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">flatten</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">block_given?</span>
+      <span class="k">begin</span>
+        <span class="vg">$LOAD_PATH</span><span class="o">.</span><span class="n">unshift</span><span class="p">(</span><span class="no">LIBPATH</span><span class="p">)</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="k">yield</span>
+      <span class="k">ensure</span>
+        <span class="vg">$LOAD_PATH</span><span class="o">.</span><span class="n">shift</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">rv</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

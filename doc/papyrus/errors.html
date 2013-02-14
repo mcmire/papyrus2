@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>errors.rb</title>
+  <link rel="stylesheet" href="http://mcmire.github.com/papyrus2/rocco.css">
+  <script src="http://mcmire.github.com/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>errors.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>This file holds all of the exceptions that Papyrus may raise.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Parser_errors'>
+      <td class="docs">
+        <div>
+          <h2>Parser errors</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-ParserError'>
+      <td class="docs">
+        <div>
+          <h4>ParserError</h4>
+
+<p>Raised by the Parser if it has a problem reading or evaluating a sub.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">ParserError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">StandardError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-UnmatchedLeftBracketError'>
+      <td class="docs">
+        <div>
+          <h4>UnmatchedLeftBracketError</h4>
+
+<p>Raised if, at the start of a sub or within a sub, the parser sees a <code>[</code> but
+never sees a matching <code>]</code> before the end of the text document is reached.</p>
+
+<p><span class="args">Examples:</span></p>
+
+<ul>
+<li><code>[foo</code></li>
+<li><code>[foo [bar]</code></li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">UnmatchedLeftBracketError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-UnmatchedSingleQuoteError'>
+      <td class="docs">
+        <div>
+          <h4>UnmatchedSingleQuoteError</h4>
+
+<p>Raised if, at the start of a sub or within a sub, the parser sees an opening
+<code>&#39;</code> but never sees a matching <code>&#39;</code> before the end of the text document is
+reached.</p>
+
+<p><span class="args">Examples:</span></p>
+
+<ul>
+<li><code>[foo &#39;this is great]</code></li>
+<li><code>[foo &#39;this is great</code></li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">UnmatchedSingleQuoteError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-UnmatchedDoubleQuoteError'>
+      <td class="docs">
+        <div>
+          <h4>UnmatchedDoubleQuoteError</h4>
+
+<p>Raised if, at the start of a sub or within a sub, the parser sees an opening
+<code>&quot;</code> but never sees a matching <code>&quot;</code> before the end of the text document is
+reached.</p>
+
+<p><span class="args">Examples:</span></p>
+
+<ul>
+<li><code>[foo &quot;this is great]</code></li>
+<li><code>[foo &quot;this is great</code></li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">UnmatchedDoubleQuoteError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-MisplacedQuoteError'>
+      <td class="docs">
+        <div>
+          <h4>MisplacedQuoteError</h4>
+
+<p>Raised if, within a sub, the parser encounters a <code>&#39;</code> or <code>&quot;</code> in the middle of
+a word.</p>
+
+<p><span class="args">Examples:</span></p>
+
+<ul>
+<li><code>[foo&quot;bar&quot;]</code></li>
+<li><code>[foo&quot;bar&quot;baz]</code></li>
+<li><code>[foo&quot;bar&quot; baz]</code></li>
+<li><code>[foo &quot;bar&quot;baz]</code></li>
+<li><code>[foo&#39;bar&#39;]</code></li>
+<li><code>[foo&#39;bar&#39;baz]</code></li>
+<li><code>[foo&#39;bar&#39; baz]</code></li>
+<li><code>[foo &#39;bar&#39;baz]</code></li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">MisplacedQuoteError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-UnknownSubError'>
+      <td class="docs">
+        <div>
+          <h4>UnknownSubError</h4>
+
+<p>Raised if the parser encounters a bracketed expression that appears to be a
+sub but is malformed.</p>
+
+<p><span class="args">Example:</span></p>
+
+<ul>
+<li><code>[1092]</code></li>
+<li><code>[steve&#39;s]</code></li>
+<li><code>[[foo] bar]</code> (where <code>[foo]</code> resolves to nothing)</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">UnknownSubError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-UnknownVariableError'>
+      <td class="docs">
+        <div>
+          <h4>UnknownVariableError</h4>
+
+<p>Raised when the parser attemps to resolve a Variable and the variable is not
+registered in any context.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">UnknownVariableError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-InvalidCloseSubError'>
+      <td class="docs">
+        <div>
+          <h4>InvalidCloseSubError</h4>
+
+<p>Raised if the parser encounters a bracketed expression that appears to be
+the close of a block command, but is malformed.</p>
+
+<p><span class="args">Example:</span></p>
+
+<ul>
+<li><code>[/09213]</code></li>
+<li><code>[/steve&#39;s]</code></li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">InvalidCloseSubError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-UnmatchedCloseSubError'>
+      <td class="docs">
+        <div>
+          <h4>UnmatchedCloseSubError</h4>
+
+<p>Raised if the parser encounters a bracketed expression that appears to be
+the close of a block command, but the name of the command it refers to
+doesn&#39;t exist.</p>
+
+<p><span class="args">Example:</span></p>
+
+<ul>
+<li><code>[foo]...[/bar]</code></li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">UnmatchedCloseSubError</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ParserError</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Other_errors'>
+      <td class="docs">
+        <div>
+          <h2>Other errors</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-RedoEvaluation'>
+      <td class="docs">
+        <div>
+          <h4>RedoEvaluation</h4>
+
+<p>Raised while evaluating the contents of a Variable. As the value of a
+Variable may be a Variable itself, and that Variable may resolve to another
+Variable, we have to descend into the AST until it resolves into a Text
+node. This exception (which isn&#39;t really an exception, it&#39;s more of a flow
+control thing) just tells Papyrus to keep on going.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="no">RedoEvaluation</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">StandardError</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>
