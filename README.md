@@ -67,11 +67,13 @@ pretty cool things with them:
 
 ## So how does Papyrus work?
 
-Read the source, man! But seriously. I've tried to document a lot of the code
-because I think the whole thing is pretty neat. I used Rocco for the first time.
-It feels like you're reading a book, kind of. I think you'll like it.
-Check it out: <http://mcmire.github.com/papyrus2/doc/papyrus.html>. **(Note: I'm
-still working on this, excuse the dust)**
+Read the source, man! But seriously. I've been trying out
+[Docco](http://github.com/jashkenas/docco) for this project, writing up
+documentation for every method and noting any complicated logic. I'm not sold on
+this yet (well, I can't figure out how I want to lay the docs out so a lot of
+things are still in flux) and I may return to inline documentation eventually.
+But for the moment, this is what I am doing. You can keep eyes on the current
+progress here: <http://mcmire.github.com/papyrus2/doc/papyrus.html>.
 
 ## How did Papyrus come about?
 
