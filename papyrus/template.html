@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>template.rb</title>
+  <link rel="stylesheet" href="/Users/elliot/code/github/mine/papyrus2/rocco.css">
+  <script src="/Users/elliot/code/github/mine/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>template.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="nb">require</span> <span class="s1">&#39;forwardable&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;strscan&#39;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class="docs">
+        <div>
+          <p>require &#39;papyrus/body_string&#39;
+require &#39;papyrus/parser&#39;
+require &#39;papyrus/tokenizer&#39;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class="docs">
+        <div>
+          <p>A Template is the grand central station of the parsing process. It
+represents a source string that will be tokenized, parsed, and evaluated
+into a final string. Essentially, when a template is rendered, any
+substitutions (bits of code surrounded by square brackets, such as [foo] or
+[bar 1 2 3]) in the source string are executed and then replaced with their
+resulting values.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>  <span class="k">class</span> <span class="nc">Template</span>
+    <span class="kp">extend</span> <span class="no">Forwardable</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Parses the substitutions in the source string and replaces them with
+their corresponding values. The replacement text of [body] subs are
+specially processed if so specified. Returns the final string.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">render</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{})</span>
+      <span class="kp">new</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span><span class="o">.</span><span class="n">render</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Creates a new Template, storing the given content and options. Content is
+usually a string, but may also be an instance of StringScanner. Available
+options are:</p>
+
+<p>:vars                 - Template variables which will be set in the
+                        created document before it is parsed.
+:custom_command_class - If you have a set of custom commands, and you want
+                        Papyrus to use it when resolving subs, you can
+                        pass the class here (as a constant, not a string).
+:shielded_commands    - An array of command names that will be &ldquo;shielded&rdquo;
+                        &mdash; i.e., if there are any subs passed as arguments
+                        to these commands, they will be ignored instead of
+                        being replaced.
+:allowed_commands     - An array of command names. Only these commands
+                        will be replaced, all other ones will be ignored.
+:extra                - Right now these options are used to determine
+                        whether the parsed content should be
+                        post-processed, and they are also are also passed
+                        to your CustomCommandSet.</p>
+
+<p>All options above will also be used by the Parser and Tokenizer, created
+later in the parsing process.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+      <span class="vi">@options</span> <span class="o">=</span> <span class="n">options</span>
+      <span class="vi">@vars</span> <span class="o">=</span> <span class="p">(</span><span class="vi">@options</span><span class="o">[</span><span class="ss">:vars</span><span class="o">]</span> <span class="o">||=</span> <span class="p">{})</span>
+      <span class="k">if</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:custom_command_class</span><span class="o">]</span>
+        <span class="vi">@options</span><span class="o">[</span><span class="ss">:custom_commands</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:custom_command_class</span><span class="o">].</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:extra</span><span class="o">]</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="vi">@custom_commands</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:custom_commands</span><span class="o">]</span>
+      <span class="vi">@shielded_commands</span> <span class="o">=</span> <span class="p">(</span><span class="vi">@options</span><span class="o">[</span><span class="ss">:shielded_commands</span><span class="o">]</span> <span class="o">||=</span> <span class="o">[]</span><span class="p">)</span>
+      <span class="vi">@allowed_commands</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:allowed_commands</span><span class="o">]</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Called on #dup or #clone.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize_copy</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+      <span class="vi">@options</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">.</span><span class="n">clone</span>
+      <span class="vi">@options</span><span class="o">[</span><span class="ss">:vars</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@vars</span> <span class="o">=</span> <span class="vi">@vars</span><span class="o">.</span><span class="n">deep_copy</span>
+      <span class="k">if</span> <span class="vi">@custom_commands</span>
+        <span class="vi">@custom_commands</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:custom_commands</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@custom_commands</span><span class="o">.</span><span class="n">clone</span>
+      <span class="k">end</span>
+      <span class="vi">@shielded_commands</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:shielded_commands</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@shielded_commands</span><span class="o">.</span><span class="n">clone</span>
+      <span class="k">if</span> <span class="vi">@allowed_commands</span>
+        <span class="vi">@allowed_commands</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:allowed_commands</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@allowed_commands</span><span class="o">.</span><span class="n">clone</span>
+      <span class="k">end</span>
+      <span class="k">if</span> <span class="vi">@parser</span>
+        <span class="vi">@parser</span> <span class="o">=</span> <span class="vi">@parser</span><span class="o">.</span><span class="n">clone</span>
+        <span class="vi">@parser</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="nb">self</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="kp">attr_reader</span> <span class="ss">:options</span>
+    <span class="kp">attr_reader</span> <span class="ss">:content</span>
+    <span class="kp">attr_reader</span> <span class="ss">:tokenizer</span>
+    <span class="kp">attr_reader</span> <span class="ss">:parser</span>
+    <span class="kp">attr_reader</span> <span class="ss">:vars</span>
+    <span class="kp">attr_reader</span> <span class="ss">:custom_commands</span>
+    <span class="kp">attr_reader</span> <span class="ss">:shielded_commands</span>
+    <span class="kp">attr_accessor</span> <span class="ss">:parent</span>
+    <span class="kp">attr_reader</span> <span class="ss">:allowed_commands</span>
+
+    <span class="n">delegate</span> <span class="o">[</span><span class="ss">:[]</span><span class="p">,</span> <span class="ss">:[]=</span><span class="o">]</span> <span class="o">=&gt;</span> <span class="ss">:@vars</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Run the content through the tokenizer to produce an array of tokens, then
+runs those tokens through the parser to produce a document of nodes.
+Returns the resulting document.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">analyze</span>
+      <span class="n">_tokenize</span>
+      <span class="n">_parse</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Parse the substitutions in the source string and replace them with their
+corresponding values. The replacement text of [body] subs are specially
+processed if so specified. Returns the final string.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">render</span>
+      <span class="n">analyze</span>
+      <span class="n">_evaluate</span>
+      <span class="n">_process_bodies</span> <span class="k">if</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:extra</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:extra</span><span class="o">][</span><span class="ss">:process_body</span><span class="o">]</span>
+      <span class="k">return</span> <span class="vi">@results</span><span class="o">.</span><span class="n">join</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Ensure that the given content is stored as a StringScanner, which provides
+useful methods for stepping through the content.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">content</span><span class="o">=</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+      <span class="vi">@content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">StringScanner</span><span class="p">)</span> <span class="p">?</span> <span class="n">content</span> <span class="p">:</span> <span class="no">StringScanner</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+      <span class="vi">@tokenizer</span> <span class="o">=</span> <span class="vi">@parser</span> <span class="o">=</span> <span class="vi">@results</span> <span class="o">=</span> <span class="kp">nil</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>Clone the current template, allowing you to specify new content, options,
+or parent. Note that you can keep the old options if you like by just passing
+an empty hash - this will simply merge the new ones into the old.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">clone_with</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{},</span> <span class="n">parent</span><span class="o">=</span><span class="kp">nil</span><span class="p">)</span>
+      <span class="n">template</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">clone</span>
+      <span class="n">template</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+      <span class="n">template</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">deep_merge!</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+      <span class="n">template</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span> <span class="k">if</span> <span class="n">parent</span>
+      <span class="n">template</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">template</span>
+      <span class="nb">self</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <p>def inspect
+ &ldquo;#&lt;%s:0x%x %s&gt;&rdquo; % [ self.class, self.object_id, @content.inspect ]
+end</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">pretty_print_instance_variables</span>
+      <span class="o">[</span><span class="s2">&quot;@content&quot;</span><span class="p">,</span> <span class="s2">&quot;@options&quot;</span><span class="o">]</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12' data-parent-index="2">
+      <td class="docs">
+        <div>
+          <hr>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_tokenize</span>
+      <span class="vi">@tokenizer</span> <span class="o">=</span> <span class="no">Tokenizer</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+      <span class="vi">@tokenizer</span><span class="o">.</span><span class="n">tokenize</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">_parse</span>
+      <span class="vi">@parser</span> <span class="o">=</span> <span class="no">Parser</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+      <span class="vi">@parser</span><span class="o">.</span><span class="n">parse</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">_evaluate</span>
+      <span class="vi">@results</span> <span class="o">=</span> <span class="vi">@parser</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">evaluate</span>
+      <span class="vi">@results</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">_process_bodies</span>
+      <span class="vi">@results</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">str</span><span class="p">,</span> <span class="n">i</span><span class="o">|</span>
+        <span class="k">next</span> <span class="k">unless</span> <span class="no">BodyString</span> <span class="o">===</span> <span class="n">str</span>
+        <span class="vi">@results</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@options</span><span class="o">[</span><span class="ss">:extra</span><span class="o">][</span><span class="ss">:process_body</span><span class="o">].</span><span class="n">call</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>custom_command_set.rb</title>
+  <link rel="stylesheet" href="/Users/elliot/code/github/mine/papyrus2/rocco.css">
+  <script src="/Users/elliot/code/github/mine/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>custom_command_set.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>Papyrus comes with some builtin commands, but we recognize that you may have
+your own commands that you want to add to the Papyrus lexicon. The way you do
+this is through a CustomCommandSet. The idea is that commands correspond to
+instance methods inside of a CustomCommandSet, and when Papyrus resolves a
+command it will look for a corresponding method by the same name and call it
+if it exists.</p>
+
+<p>CustomCommandSet is an abstract class, so to start out you must make your own
+class that inherits from it. As you may know there are two types of commands,
+inline and block, and you can define both.</p>
+
+<ul>
+<li><p>To define inline commands, open an InlineCommands module inside of your
+class. Any methods you define in this module will be seen as inline
+commands. When called, each method receives one argument: the list of
+arguments given to the command as an Array of {Array | String}. (A nested
+array will appear if a sub was passed in as one of the arguments to the
+command. You will likely want to flatten this array and work with it from
+there.) Each method you define must return a String.</p></li>
+<li><p>Similarly, for block commands use a BlockCommands module, and any methods
+you define here will be seen as block commands. When called, they receive
+two arguments: the command&#39;s argument list as an Array, and the contents of
+the command as a String. Again, each method you define must return a String.</p></li>
+</ul>
+
+<p>Both modules are mixed into your CustomCommandSet, so if you need to refer to
+methods that are not intended to be commands, define them outside of the
+modules.</p>
+
+<p>Speaking of outside the modules, you can use <code>alias_command</code> and
+<code>dont_pre_evaluate_args</code> to modify properties about any commands.</p>
+
+<p>Finally, to hook your class into Papyrus, you tell the Template about it
+using a <code>:custom_commands_class</code> option.</p>
+
+<p>Here is an example to show how all of this works:</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">MyCustomCommandSet</span> <span class="o">&lt;</span> <span class="ss">Papyrus</span><span class="p">:</span><span class="ss">:CustomCommandSet</span>
+  <span class="k">module</span> <span class="nn">InlineCommands</span>
+    <span class="c1"># Show a formatted version of the current time.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Syntax:</span>
+    <span class="c1">#   time [FORMAT]</span>
+    <span class="c1">#</span>
+    <span class="c1"># Examples:</span>
+    <span class="c1">#   [time]</span>
+    <span class="c1">#   [time &quot;%Y%m%d&quot;]</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+      <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">flatten</span>
+      <span class="nb">format</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">first</span> <span class="o">||</span> <span class="s2">&quot;%Y-%m-%d&quot;</span>
+      <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">module</span> <span class="nn">BlockCommands</span>
+    <span class="c1"># Show the contents of the block only if the private flag is checked.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Syntax:</span>
+    <span class="c1">#   [private]...[/private]</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="nf">private</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">inner</span><span class="p">)</span>
+      <span class="n">show_private?</span> <span class="p">?</span> <span class="n">inner</span> <span class="p">:</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">dont_pre_evaluate_args</span> <span class="ss">:private</span>
+
+  <span class="k">def</span> <span class="nf">show_private?</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Later...</span>
+
+<span class="n">template</span> <span class="o">=</span> <span class="ss">Papyrus</span><span class="p">:</span><span class="ss">:Template</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">some_content</span><span class="p">,</span>
+  <span class="ss">:custom_commands_class</span> <span class="o">=&gt;</span> <span class="no">MyCustomCommandSet</span>
+<span class="p">)</span>
+<span class="n">template</span><span class="o">.</span><span class="n">render</span>
+</pre></div>
+<p>TODO:</p>
+
+<ul>
+<li>Instead of forcing the user to define methods explicitly called
+InlineCommands and BlockCommands, use a DSL &mdash; <code>inline_commands do ... end</code>
+and <code>block_commands do ... end</code></li>
+<li>Aliases should be associated with each command type, not globally, as an
+inline command and block command can share the same name</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">class</span> <span class="nc">CustomCommandSet</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Class_methods'>
+      <td class="docs">
+        <div>
+          <h2>Class methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_methods'>
+      <td class="docs">
+        <div>
+          <h3>Public methods</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.alias_command</strong> lets users refer to a command by
+another name.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The String or Symbol name of the existing command.</li>
+<li><code>alias_name</code> &mdash; The String or Symbol name of the new command.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">alias_command</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">alias_name</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5' data-parent-index="3">
+      <td class="docs">
+        <div>
+          <p>TODO: The arguments here should be reversed to align with <code>alias_method</code>.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">aliases</span><span class="o">[</span><span class="n">_convert_name</span><span class="p">(</span><span class="n">alias_name</span><span class="p">)</span><span class="o">]</span> <span class="o">=</span> <span class="n">_convert_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.dont_pre_evaluate_args</strong>: Usually when Papyrus
+evaluates a command, it evaluates the arguments that have been given to
+that command before executing the command itself, and passes the evaluated
+arguments to the method for the command. If for some reason you do not
+want this to happen or you want to handle the evaluation yourself,
+you can tell Papyrus to forgo evaluation with this method.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li>A variadic list of String or Symbol names of commands.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">dont_pre_evaluate_args</span><span class="p">(</span><span class="o">*</span><span class="n">names</span><span class="p">)</span>
+      <span class="n">names</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span>
+        <span class="n">command_properties</span><span class="o">[</span><span class="n">_convert_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span><span class="o">][</span><span class="ss">:pre_evaluate_args</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.has_inline_command?</strong> lets you determine whether an
+inline command is present in this command set.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The String or Symbol name of a command.</li>
+</ul>
+
+<p>Returns true if yes, else false.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">has_inline_command?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="k">return</span> <span class="kp">false</span> <span class="k">unless</span> <span class="nb">const_defined?</span><span class="p">(</span><span class="ss">:InlineCommands</span><span class="p">)</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="n">_convert_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="n">real_name</span> <span class="o">=</span> <span class="n">aliases</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">||</span> <span class="nb">name</span>
+      <span class="nb">const_get</span><span class="p">(</span><span class="ss">:InlineCommands</span><span class="p">)</span><span class="o">.</span><span class="n">instance_methods</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">real_name</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.has_inline_command?</strong> lets you determine whether a
+block command is present in this command set.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The String or Symbol name of a command.</li>
+</ul>
+
+<p>Returns true if yes, else false.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">has_block_command?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="k">return</span> <span class="kp">false</span> <span class="k">unless</span> <span class="nb">const_defined?</span><span class="p">(</span><span class="ss">:BlockCommands</span><span class="p">)</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="n">_convert_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="n">real_name</span> <span class="o">=</span> <span class="n">aliases</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">||</span> <span class="nb">name</span>
+      <span class="nb">const_get</span><span class="p">(</span><span class="ss">:BlockCommands</span><span class="p">)</span><span class="o">.</span><span class="n">instance_methods</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">real_name</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Internal_methods'>
+      <td class="docs">
+        <div>
+          <h3>Internal methods</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.command_properties</strong> keeps explicit settings for
+certain commands (so far, <code>:dont_pre_evaluate_args</code> is the only setting).</p>
+
+<p>Returns a Hash: each key is the Symbol name of a command, each value is a
+Hash itself (the settings for that command).</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">command_properties</span>
+      <span class="vi">@command_properties</span> <span class="o">||=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="o">|</span><span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="o">|</span> <span class="n">h</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span> <span class="p">}</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.aliases</strong> keeps the alternate names of commands for
+which <code>alias_command</code> has been called.</p>
+
+<p>Returns a Hash: each key is the Symbol name of a command, each value is
+the Symbol name of the original command it points to.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">aliases</span>
+      <span class="vi">@aliases</span> <span class="o">||=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Private_methods'>
+      <td class="docs">
+        <div>
+          <h3>Private methods</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">_convert_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="nb">name</span><span class="o">.</span><span class="n">to_sym</span><span class="o">.</span><span class="n">downcase</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Instance_methods'>
+      <td class="docs">
+        <div>
+          <h2>Instance methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_methods'>
+      <td class="docs">
+        <div>
+          <h3>Public methods</h3>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-15'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.template</strong> returns the Template object that this
+command set is plugged into.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:template</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.args</strong> returns the set of <code>:extra</code> options passed to
+the Template.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:args</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-17'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet.new</strong> initializes a new CustomCommandSet.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>template</code> &mdash; The Template object that this command set is plugged into.</li>
+<li><code>args</code> &mdash; The set of <code>:extra</code> options passed to the Template. Not used
+in CustomCommandSet proper, but you may use them as you wish (they just
+allow for customization of whatever you want).</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kp">nil</span><span class="p">)</span>
+      <span class="vi">@template</span> <span class="o">=</span> <span class="n">template</span>
+      <span class="vi">@args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">||</span> <span class="p">{}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-18' data-parent-index="16">
+      <td class="docs">
+        <div>
+          <p>Include the modules into this instance if they have been defined, this
+way any references within command methods to methods within this
+instance will work.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_defined?</span><span class="p">(</span><span class="ss">:InlineCommands</span><span class="p">)</span>
+        <span class="kp">extend</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_get</span><span class="p">(</span><span class="ss">:InlineCommands</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_defined?</span><span class="p">(</span><span class="ss">:BlockCommands</span><span class="p">)</span>
+        <span class="kp">extend</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_get</span><span class="p">(</span><span class="ss">:BlockCommands</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet#initialize_copy</strong> is called on #dup or #clone.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>set</code> &mdash; The original CustomCommandSet object that is being copied.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize_copy</span><span class="p">(</span><span class="n">set</span><span class="p">)</span>
+      <span class="vi">@args</span> <span class="o">=</span> <span class="vi">@args</span><span class="o">.</span><span class="n">clone</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20' data-parent-index="18">
+      <td class="docs">
+        <div>
+          <p>Include the modules into this instance if they have been defined, this
+way any references within command methods to methods within this
+instance will work.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_defined?</span><span class="p">(</span><span class="ss">:InlineCommands</span><span class="p">)</span>
+        <span class="kp">extend</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_get</span><span class="p">(</span><span class="ss">:InlineCommands</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_defined?</span><span class="p">(</span><span class="ss">:BlockCommands</span><span class="p">)</span>
+        <span class="kp">extend</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">const_get</span><span class="p">(</span><span class="ss">:BlockCommands</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-21'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet#__call_inline_command__</strong> attempts to look up the given
+inline command and call it. If the command is not defined,
+#inline_command_missing is called instead.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>sub</code> &mdash; A Sub object.</li>
+</ul>
+
+<p>Returns a String.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__call_inline_command__</span><span class="p">(</span><span class="nb">sub</span><span class="p">)</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="nb">sub</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">to_sym</span>
+      <span class="n">real_name</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">aliases</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">||</span> <span class="nb">name</span>
+      <span class="n">pre_evaluate_args</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">command_properties</span><span class="o">[</span><span class="nb">name</span><span class="o">][</span><span class="ss">:pre_evaluate_args</span><span class="o">]</span> <span class="o">===</span> <span class="kp">false</span>
+      <span class="n">args</span> <span class="o">=</span> <span class="n">pre_evaluate_args</span> <span class="p">?</span> <span class="nb">sub</span><span class="o">.</span><span class="n">orig_args</span> <span class="p">:</span> <span class="nb">sub</span><span class="o">.</span><span class="n">evaluated_args</span>
+
+      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">has_inline_command?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="n">inline_command_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-22'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet#__call_block_command__</strong> attempts to look up the given
+block command and call it. If the command is not defined,
+#block_command_missing is called instead.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>sub</code> &mdash; A Sub object.</li>
+</ul>
+
+<p>Returns a String.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__call_block_command__</span><span class="p">(</span><span class="nb">sub</span><span class="p">)</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="nb">sub</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">to_sym</span>
+      <span class="n">real_name</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">aliases</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">||</span> <span class="nb">name</span>
+      <span class="n">pre_evaluate_args</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">command_properties</span><span class="o">[</span><span class="nb">name</span><span class="o">][</span><span class="ss">:pre_evaluate_args</span><span class="o">]</span> <span class="o">===</span> <span class="kp">false</span>
+      <span class="n">args</span> <span class="o">=</span> <span class="n">pre_evaluate_args</span> <span class="p">?</span> <span class="nb">sub</span><span class="o">.</span><span class="n">orig_args</span> <span class="p">:</span> <span class="nb">sub</span><span class="o">.</span><span class="n">evaluated_args</span>
+      <span class="n">inner</span> <span class="o">=</span> <span class="nb">sub</span><span class="o">.</span><span class="n">evaluated_nodes</span>
+
+      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">has_block_command?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">inner</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="n">block_command_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">inner</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-23'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet#inline_command_missing</strong> is called by the Parser if the
+inline command was attempted to be called yet was not defined. By default
+Papyrus will simply not substitute the command, but if you want to change
+this behavior, simply override this method &mdash; just remember to raise
+UnknownSubError or ParserError if an error is encountered.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The Symbol name of a command.</li>
+<li><code>args</code> &mdash; Either an Array of Strings or a NodeList.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">inline_command_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+      <span class="k">raise</span> <span class="no">UnknownSubError</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-24'>
+      <td class="docs">
+        <div>
+          <p><strong>CustomCommandSet#block_command_missing</strong> is called by the Parser if the
+block command was attempted to be called yet was not defined. By default
+Papyrus will simply not substitute the command, but if you want to change
+this behavior, simply override this method &mdash; just remember to raise
+UnknownSubError or ParserError if an error is encountered.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The Symbol name of a command.</li>
+<li><code>args</code> &mdash; Either an Array of Strings or a NodeList.</li>
+</ul>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">block_command_missing</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">inner</span><span class="p">)</span>
+      <span class="k">raise</span> <span class="no">UnknownSubError</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

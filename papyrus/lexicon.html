@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>lexicon.rb</title>
+  <link rel="stylesheet" href="/Users/elliot/code/github/mine/papyrus2/rocco.css">
+  <script src="/Users/elliot/code/github/mine/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>lexicon.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>The Lexicon holds all of the commands that Papyrus knows about. When the
+Parser goes to resolve a sub as a command, it will look in the Lexicon.</p>
+
+<p>Adding a (built-in) command to the Lexicon requires that you make a wrapper
+class for the command. For instance, if you made a <code>[time]</code> command that
+outputs the current time, you might have a corresponding Time class that
+looked something like:</p>
+<div class="highlight"><pre><span class="k">module</span> <span class="nn">MyCommands</span>
+  <span class="k">class</span> <span class="nc">Time</span> <span class="o">&lt;</span> <span class="ss">Papyrus</span><span class="p">:</span><span class="ss">:Command</span>
+    <span class="k">def</span> <span class="nf">evaluate</span>
+      <span class="c1"># ...</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+<p>Then, you could add it to the Lexicon as follows:</p>
+<div class="highlight"><pre><span class="ss">Papyrus</span><span class="p">:</span><span class="ss">:Lexicon</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="ss">:time</span><span class="p">,</span> <span class="ss">MyCommands</span><span class="p">:</span><span class="ss">:Time</span><span class="p">)</span>
+</pre></div>
+<p>Or, if you had a whole collection of classes, you could add them in one fell
+swoop by saying:</p>
+<div class="highlight"><pre><span class="ss">Papyrus</span><span class="p">:</span><span class="ss">:Lexicon</span><span class="o">.</span><span class="n">extend_lexicon</span><span class="p">(</span><span class="no">MyCommands</span><span class="p">)</span>
+</pre></div>
+<p>In fact, this is what Papyrus uses to add its own built-in commands.</p>
+
+<p>NOTE: If you wish to define methods in terms of methods rather than
+full-on Command classes, the Lexicon does not support this; instead, use a
+CustomCommandSet. Read the document on that for more information. Perhaps this
+will be combined at a later time.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">class</span> <span class="nc">Lexicon</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_methods'>
+      <td class="docs">
+        <div>
+          <h2>Public methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class="docs">
+        <div>
+          <p><strong>Lexicon.add_command</strong> lets you add a single command (represented by a
+class) to the lexicon.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>name</code> &mdash; The String or Symbol name of the new command.</li>
+<li><code>klass</code> &mdash; A Class constant which contains the logic for this command
+(expected to be a subclass of Papyrus::Command).</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">add_command</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">klass</span><span class="p">)</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">to_sym</span>
+      <span class="n">commands</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">klass</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class="docs">
+        <div>
+          <p><strong>Lexicon.extend_lexicon</strong> lets you add a group of commands (represented
+by classes contained in a namespace) to the lexicon all at once.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>mod</code> - The Module constant which contains classes. These classes are
+expected to be subclasses of Papyrus::Command. The name of each command
+is derived from the name of the class (so a Time class would be assumed to
+represent the <code>[time]</code> command).</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">extend_lexicon</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+      <span class="k">return</span> <span class="k">if</span> <span class="n">extensions</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+      <span class="n">mod</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">constant</span><span class="o">|</span>
+        <span class="n">command_name</span> <span class="o">=</span> <span class="n">constant</span><span class="o">.</span><span class="n">downcase</span>
+        <span class="n">command_class</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">const_get</span><span class="p">(</span><span class="n">constant</span><span class="p">)</span>
+        <span class="k">if</span> <span class="no">Class</span> <span class="o">===</span> <span class="n">command_class</span>
+          <span class="n">add_command</span><span class="p">(</span><span class="n">command_name</span><span class="p">,</span> <span class="n">command_class</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+      <span class="n">extensions</span> <span class="o">&lt;&lt;</span> <span class="n">mod</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Internal_methods'>
+      <td class="docs">
+        <div>
+          <h2>Internal methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class="docs">
+        <div>
+          <p><strong>Lexicon.commands</strong> contains all of the defined commands (whether defined
+individually or from a module).</p>
+
+<p>Returns a Hash of &lt;Symbol command name, Class command class&gt;.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">commands</span>
+      <span class="vi">@commands</span> <span class="o">||=</span> <span class="p">{}</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class="docs">
+        <div>
+          <p><strong>Lexicon.extensions</strong> contains all of the modules which have been used to
+extend the lexicon. This is really just used to ensure that a module is
+not used to extend the lexicon more than once.</p>
+
+<p>Returns an Array of Modules.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">extensions</span>
+      <span class="vi">@extensions</span> <span class="o">||=</span> <span class="o">[]</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

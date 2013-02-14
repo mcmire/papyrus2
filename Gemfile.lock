@@ -1,0 +1,28 @@
+GIT
+  remote: git://github.com/mcmire/rocco.git
+  revision: feb16959e1ddddda6a34276f884087a9ca243b3f
+  branch: mcmire
+  specs:
+    rocco (0.8.2)
+      mustache
+      pygments.rb
+      redcarpet (~> 2)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    mustache (0.99.4)
+    posix-spawn (0.3.6)
+    pygments.rb (0.3.7)
+      posix-spawn (~> 0.3.6)
+      yajl-ruby (~> 1.1.0)
+    rake (10.0.3)
+    redcarpet (2.2.2)
+    yajl-ruby (1.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake (~> 10.0.3)
+  rocco!

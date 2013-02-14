@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>papyrus.rb</title>
+  <link rel="stylesheet" href="/Users/elliot/code/github/mine/papyrus2/rocco.css">
+  <script src="/Users/elliot/code/github/mine/papyrus2/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="papyrus/block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="papyrus/body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="papyrus/body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="papyrus/command.html">command.rb</a></li>
+        <li><a class="source" href="papyrus/commands.html">commands.rb</a></li>
+        <li><a class="source" href="papyrus/commands/include.html">include.rb</a></li>
+        <li><a class="source" href="papyrus/context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="papyrus/core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="papyrus/core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="papyrus/core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="papyrus/core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="papyrus/custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="papyrus/custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="papyrus/document.html">document.rb</a></li>
+        <li><a class="source" href="papyrus/errors.html">errors.rb</a></li>
+        <li><a class="source" href="papyrus/inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="papyrus/insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="papyrus/lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="papyrus/node.html">node.rb</a></li>
+        <li><a class="source" href="papyrus/node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="papyrus/null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="papyrus/parser.html">parser.rb</a></li>
+        <li><a class="source" href="papyrus/paths.html">paths.rb</a></li>
+        <li><a class="source" href="papyrus/separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="papyrus/sub.html">sub.rb</a></li>
+        <li><a class="source" href="papyrus/template.html">template.rb</a></li>
+        <li><a class="source" href="papyrus/text.html">text.rb</a></li>
+        <li><a class="source" href="papyrus/token.html">token.rb</a></li>
+        <li><a class="source" href="papyrus/token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="papyrus/tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="papyrus/variable.html">variable.rb</a></li>
+        <li><a class="source" href="papyrus/version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>papyrus.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>This is the beginning, the file you require to load the entire Papyrus
+library. But, you could have probably guessed that.</p>
+
+<p>If you want to learn more about Papyrus, read the README! Then come back after
+you&#39;re done. I&#39;ll wait.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class="docs">
+        <div>
+          
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../papyrus/paths&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+
+<span class="nb">require</span> <span class="s1">&#39;papyrus/node&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/sub&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/command&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/context_item&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/block_command&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/node_list&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/body_node_list&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/body_string&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/insertion_sub&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/lexicon&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/commands&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/context&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/core_ext&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/custom_block_command&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/custom_command_set&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/document&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/errors&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/inline_sub&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/null_object&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/parser&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/paths&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/separate_string&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/template&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/text&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/token&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/token_list&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/tokenizer&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;papyrus/variable&#39;</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>
