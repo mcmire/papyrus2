@@ -3,9 +3,11 @@
 ## THIS IS A PRE-RELEASE VERSION
 
 This library is a re-write of a prior library I created. (If you are interested,
-a much earlier version is available [here](http://github.com/mcmire/papyrus). I
+a much earlier version is available [here](http://github.com/mcmire/papyrus)). I
 am still in the process of changing some things, so I wouldn't use this for
 anything just yet.
+
+---
 
 ## What is Papyrus?
 
