@@ -104,18 +104,18 @@ $solarized-violet-light: rgb(180, 127, 236);
   @return $solarized-green;
 }
 @function solarized-cyan($flavor) {
-  @if $flavor == "light" {
-    @return $solarized-cyan-light;
-  } @else {
+  //@if $flavor == "light" {
+  //  @return $solarized-cyan-light;
+  //} @else {
     @return $solarized-cyan;
-  }
+  //}
 }
 @function solarized-violet($flavor) {
-  @if $flavor == "light" {
-    @return $solarized-violet-light;
-  } @else {
+  //@if $flavor == "light" {
+  //  @return $solarized-violet-light;
+  //} @else {
     @return $solarized-violet;
-  }
+  //}
 }
 
 @function solarized-back($flavor) {

@@ -4,11 +4,14 @@
 module Papyrus
   module Commands
     class Include < Command
-      # The InsertionSub module provides #parse\_and\_insert\_into\_parent.
+      # The InsertionSub module provides #parse_and_insert_into_parent.
       include InsertionSub
 
-      # **Include#get\_template\_source** gets the content that will be inserted
-      # into the current template.
+      # ## Public methods
+
+      # #### Include#get_template_source
+      #
+      # Gets the content that will be inserted into the current template.
       #
       # You must override this method in a subclass. It must return the NodeList
       # template content that will replace this sub.
@@ -20,11 +23,13 @@ module Papyrus
         EOT
       end
 
-      # **Include#evaluate** runs the content retrieved by
-      # \#get\_template\_source through the parser and insert the resulting
-      # nodes into the document that is currently being evaluated.
+      # #### Include#evaluate
       #
-      # It returns the String evaluated content.
+      # Runs the content retrieved by #get_template_source through the parser
+      # and insert the resulting nodes into the document that is currently being
+      # evaluated.
+      #
+      # Returns the String evaluated content.
       #
       def evaluate
         @evaluated_args = @args.to_a

@@ -1,4 +1,3 @@
-
 # This module provides two methods: 'path' and 'libpath'. These methods provide
 # three things:
 #
@@ -15,30 +14,36 @@ module Papyrus
   PATH = ::File.expand_path('../../..', __FILE__)
   LIBPATH = ::File.join(PATH, 'lib')
 
-  # Signatures:
+  # #### Papyrus#path
   #
-  # Papyrus.path
+  # There are three ways to call this:
   #
-  # Get the root path of the project.
+  # 1. `Papyrus.path` -- Get the root path of the project.
   #
-  # Papyrus.path(*args)
+  # 2. `Papyrus.path(*args)` -- Get a path of a file within this project.
   #
-  # Get a path of a file within this project.
+  #     ||Arguments:||
+  #     * A variadic list of Strings which will be joined to the project path.
   #
-  # Papyrus.path(&block)
+  # 3. `Papyrus.path(&block)` -- Provides a non-obtrusive way to require files
+  #    within the root path.
   #
-  # Yield the block with the root path appended to the load path; this lets
-  # you require files within the root path easily.
+  #    ||Arguments:||
+  #    * `block` -- The project path is added to the load path before this is
+  #      yielded and then popped off afterward. Hence any files required in the
+  #      block are guaranteed to look in the project path first.
   #
-  # Examples:
+  # ||Examples:||
   #
-  #   # Assuming root path is /code/papyrus
-  #   Papyrus.path             #=> /code/papyrus
-  #   Papyrus.path('foo/bar')  #=> /code/papyrus/foo/bar
-  #   # These are equivalent:
-  #   Papyrus.path { require 'foo/bar' }
-  #   require Papyrus.path('foo/bar')
-  #   require '/code/papyrus/foo/bar'
+  # ~~~ ruby
+  # # Assuming root path is /code/papyrus
+  # Papyrus.path             #=> /code/papyrus
+  # Papyrus.path('foo/bar')  #=> /code/papyrus/foo/bar
+  # # These are equivalent:
+  # Papyrus.path { require 'foo/bar' }
+  # require Papyrus.path('foo/bar')
+  # require '/code/papyrus/foo/bar'
+  # ~~~
   #
   def self.path(*args)
     rv = ::File.join(PATH, args.flatten)
@@ -53,30 +58,36 @@ module Papyrus
     return rv
   end
 
-  # Signatures:
+  # #### Papyrus.libpath
   #
-  # Papyrus.libpath
+  # There are three ways to call this:
   #
-  # Get the path of the 'lib' folder within the project.
+  # 1. `Papyrus.libpath` -- Get the path of the `lib` folder within the project.
   #
-  # Papyrus.libpath(*args)
+  # 2. `Papyrus.libpath(*args)` -- Get a path of a file within the `lib` folder.
   #
-  # Get a path of a file within the 'lib' folder.
+  #     ||Arguments:||
+  #     * A variadic list of Strings which will be joined to the lib path.
   #
-  # Papyrus.libpath(&block)
+  # 3. `Papyrus.path(&block)` -- Provides a non-obtrusive way to require files
+  #    within the lib path.
   #
-  # Yield the block with the 'lib' path appended to the load path; this lets
-  # you require files within the lib path easily.
+  #    ||Arguments:||
+  #    * `block` -- The lib path is added to the load path before this is
+  #      yielded and then popped off afterward. Hence any files required in the
+  #      block are guaranteed to look in the lib path first.
   #
-  # Examples:
+  # ||Examples:||
   #
-  #   # Assuming root path is /code/papyrus
-  #   Papyrus.libpath             #=> /code/papyrus/lib
-  #   Papyrus.libpath('foo/bar')  #=> /code/papyrus/lib/foo/bar
-  #   # These are equivalent:
-  #   Papyrus.libpath { require 'foo/bar' }
-  #   require Papyrus.libpath('foo/bar')
-  #   require '/code/papyrus/lib/foo/bar'
+  # ~~~ ruby
+  # # Assuming root path is /code/papyrus
+  # Papyrus.libpath             #=> /code/papyrus/lib
+  # Papyrus.libpath('foo/bar')  #=> /code/papyrus/lib/foo/bar
+  # # These are equivalent:
+  # Papyrus.libpath { require 'foo/bar' }
+  # require Papyrus.libpath('foo/bar')
+  # require '/code/papyrus/lib/foo/bar'
+  # ~~~
   #
   def self.libpath(*args)
     rv = ::File.join(LIBPATH, args.flatten)

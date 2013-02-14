@@ -2,7 +2,7 @@
 # tree of nodes, where each node points to its parent and eventually all the way
 # back to the root Document object. Certain nodes represent variable scopes, or
 # contexts, in the text document itself and therefore hold values. These nodes
-# attain this behavior by including the ContextItem mixin. With it, you can
+# gain this behavior by including the ContextItem mixin. With it, you can
 # retrieve and set these values inside the node by name. Setting a value is
 # straightforward: the value just gets stored inside a hash map along with its
 # key. Retrieving a value is intelligent: if the value cannot be found within
@@ -18,20 +18,29 @@ module Papyrus
   module ContextItem
     extend Forwardable
 
-    # **ContextItem#object=** associates an object with this node which will be
-    # used when looking up values.
+    # ## Public methods
+
+    # #### ContextItem#object=
     #
-    # * *object*: Either a hash, array, or object of some other class.
+    # Associates an object with this node which will be used when looking up
+    # values.
+    #
+    # ||Arguments:||
+    #
+    # * `object` -- Either a Hash, Array, or object of some other class.
     #
     attr_writer :object
 
-    # **ContextItem#object** gets the object set previously.
+    # #### ContextItem#object
+    #
+    # Gets the object set previously.
     #
     attr_reader :object
 
-    # **ContextItem#get** searches for the given key within the source object(s)
-    # within this node. If the search fails here, the search continues in an
-    # ancestor node.
+    # #### ContextItem#get
+    #
+    # Searches for the given key within the source object(s) within this node.
+    # If the search fails here, the search continues in an ancestor node.
     #
     # The `key` here may be a simple identifier, or it may be actually be
     # multiple identifiers joined with dots (think JavaScript dot notation). The
@@ -43,17 +52,18 @@ module Papyrus
     # or a number. So, here we give you a way to reach down inside of these data
     # structures to target the value you want.
     #
-    # * *key*: A Symbol, or a String which may or may not contain dots. If a
-    #          Symbol or a simple String, it must not start with a number.
+    # ||Arguments:||
+    #
+    # * `key` -- A Symbol, or a String which may or may not contain dots. If a
+    #   Symbol or a simple String, it must not start with a number.
     #
     # Returns the value that matches the given key.
     #
     # Raises an UnknownVariableError if `key` does not refer to a valid
     # identifier or the search fails.
     #
-    # (FIXME: Normalize the key before looking it up)
-    #
     def get(key)
+      # FIXME: Normalize the key before looking it up
       key = key.to_s
       raise UnknownVariableError if key =~ /^\d/
 
@@ -72,36 +82,52 @@ module Papyrus
       value_so_far
     end
 
-    # **ContextItem#set** stores the given value in the context by the given key.
+    # #### ContextItem#set
     #
-    # * *key*:   A Symbol, or a String which may or may not contain dots. If a
-    #            Symbol or a simple String, it must not start with a number.
-    # * *value*: The value you want to store. It can be anything a string,
-    #            integer, hash, array, object.
+    # Stores the given value in the context by the given key.
+    #
+    # ||Arguments:||
+    #
+    # * `key` -- A Symbol, or a String which may or may not contain dots. If a
+    #   Symbol or a simple String, it must not start with a number.
+    # * `value` -- The value you want to store. It can be anything a string,
+    #   integer, hash, array, object.
+    #
+    # Returns nothing.
     #
     def set(key, value)
       vars[key.to_s.downcase] = value
     end
     alias :[]= :set
 
-    # **ContextItem#remove** removes the given value from the context.
+    # #### ContextItem#remove
     #
-    # * *key*: A Symbol, or a String which may or may not contain dots. If a
-    #          Symbol or a simple String, it must not start with a number.
+    # Removes the given value from the context.
     #
-    # (TODO: Normalize the key before deleting)
+    # ||Arguments:||
+    #
+    # * `key` -- A Symbol, or a String which may or may not contain dots. If a
+    #   Symbol or a simple String, it must not start with a number.
+    #
+    # Returns nothing.
     #
     def delete(key)
+      # TODO: Normalize the key before deleting
       vars.delete(key)
     end
 
-    # **ContextItem#include?** (**#key?**, **#has_key?**) determines whether
-    # someone has set a value on this node.
+    # #### ContextItem#include?
     #
-    # * *key*: A Symbol, or a String which may or may not contain dots. If a
-    #          Symbol or a simple String, it must not start with a number.
+    # Determines whether someone has set a value on this node.
+    #
+    # ||Arguments:||
+    #
+    # * `key` -- A Symbol, or a String which may or may not contain dots. If a
+    #   Symbol or a simple String, it must not start with a number.
     #
     # Returns true or false.
+    #
+    # *Aliased to:* #key?, #has_key?
     #
     def include?(key)
       vars.include?(key.to_s.downcase)
@@ -109,8 +135,9 @@ module Papyrus
     alias :key? :include?
     alias :has_key? :include?
 
-    # **ContextItem#vars** provides easy access to all the variables stored in
-    # this context.
+    # #### ContextItem#vars
+    #
+    # Provides easy access to all the variables stored in this context.
     #
     # Returns a Hash.
     #
@@ -118,18 +145,20 @@ module Papyrus
       @vars ||= {}
     end
 
-    # **ContextItem#vars=** sets the hash of values within this context,
-    # converting keys to strings.
+    # #### ContextItem#vars=
+    #
+    # Sets the hash of values within this context, converting keys to strings.
     #
     # Returns a Hash.
     #
-    # (TODO: Normalize keys)
-    #
     def vars=(vars)
+      # TODO: Normalize keys
       @vars = vars.stringify_keys
     end
 
-    # **ContextItem#parser** provides easy access to the root Parser object.
+    # #### ContextItem#parser
+    #
+    # Provides easy access to the root Parser object.
     #
     # Returns a Parser object if this node has a parent. For the root Document
     # object, this returns nil.
@@ -140,11 +169,15 @@ module Papyrus
       (parent || NullObject.new).parser
     end
 
-    # **ContextItem#true?** determines whether a value is stored in the context
-    # and has a truthy value.
+    # #### ContextItem#true?
     #
-    # * *key*: A Symbol, or a String which may or may not contain dots. If a
-    #          Symbol or a simple String, it must not start with a number.
+    # Determines whether a value is stored in the context and has a truthy
+    # value.
+    #
+    # ||Arguments:||
+    #
+    # * `key` -- A Symbol, or a String which may or may not contain dots. If a
+    #   Symbol or a simple String, it must not start with a number.
     #
     # Returns false if the given variable is not found in the context or has a
     # falsy value, otherwise returns true.
@@ -153,8 +186,23 @@ module Papyrus
       !!get(key)
     end
 
-    #---
+    # ## Private methods
 
+    # #### ContextItem#_get_primary_part
+    #
+    # This method resolves a uni-part key, or the first part of a multi-part
+    # key. We look up the keypart in these places, in this order:
+    #
+    # 1. This context
+    # 2. @object
+    # 3. @parent
+    #
+    # ||Arguments:||
+    #
+    # * `key` -- The String whole of a uni-part key or the first part of a
+    #   multi-part key.
+    # * `whole_key` -- The entire key which is being resolved.
+    #
     def _get_primary_part(key, whole_key)
       if vars.has_key?(key)
         vars[key]
@@ -171,6 +219,22 @@ module Papyrus
       end
     end
 
+    # #### ContextItem#_get_secondary_part
+    #
+    # This method resolves any part after the first part of a multi-part key.
+    # We look up the keypart in these places, in this order:
+    #
+    # 1. This context
+    # 2. `value_so_far`
+    #
+    # ||Arguments:||
+    #
+    # * `key_so_far` -- Before resolving the multi-part key we split it up and
+    #   then build it back up as we process it; this is the key that's been built
+    #   up so far, a String.
+    # * `key` -- The entire key, a String.
+    # * `value_so_far` -- The value of `key_so_far` (anything).
+    #
     def _get_secondary_part(key_so_far, key, value_so_far)
       if vars.has_key?(key_so_far)
         vars[key_so_far]

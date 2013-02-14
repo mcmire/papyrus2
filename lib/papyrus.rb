@@ -4,6 +4,7 @@
 # If you want to learn more about Papyrus, read the README! Then come back after
 # you're done. I'll wait.
 
+#
 require File.expand_path('../papyrus/paths', __FILE__)
 
 require 'papyrus/node'

@@ -99,7 +99,7 @@ module Papyrus
         dop = nil
         i = 0
         until dop or node.nil?
-          dop = insertion_doppelganger_from(node)
+          dop = _insertion_doppelganger_from(node)
           j = 0
           if dop.nil?
             # Hmm, I guess that didn't work. We might be inside an argument list,

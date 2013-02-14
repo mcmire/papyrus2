@@ -100,7 +100,7 @@
 
     each(document.querySelectorAll('tr[id]'), function (tr) {
       var docsElem = tr.querySelector('.docs')
-        , pilcrowWrapper = docsElem.children[0]//.children[0]
+        , pilcrowWrapper = docsElem.children[0].children[0]
         , pilcrow, link
       if (pilcrowWrapper && pilcrowWrapper.childNodes.length) {
         link = document.createElement('a')
@@ -143,7 +143,20 @@
       }
     })
     each(headerRows, function(tr) {
+      var docsDiv = tr.querySelector('.docs > div')
+        , count = 0
       addClass(tr, 'header')
+      if (docsDiv) {
+        each(docsDiv.children, function (node) {
+          var nodeName = node.nodeName.toLowerCase()
+          if (!/^h\d$/.test(nodeName)) {
+            count += 1
+          }
+        })
+        if (count === 0) {
+          addClass(tr, 'just-header')
+        }
+      }
       if (tr.previousElementSibling) {
         addClass(tr.previousElementSibling, 'pre-header')
       }
