@@ -1,5 +1,12 @@
 # Papyrus
 
+## THIS IS A PRE-RELEASE VERSION
+
+This library is a re-write of a prior library I created. (If you are interested,
+a much earlier version is available [here](http://github.com/mcmire/papyrus). I
+am still in the process of changing some things, so I wouldn't use this for
+anything just yet.
+
 ## What is Papyrus?
 
 Papyrus is a templating library. If you've been using Ruby for a while
@@ -24,19 +31,14 @@ way, the stuff inside a sub is just a series of words, or a series of groups of
 words, where the first word is special. You can group words together with
 quotes. So, with that in mind a typical Papyrus document might look like this:
 
-    Hello, my name is Billy. I am [age] years old and I was born when
-    [president_in_year 1999] was president. When I am president I am going to
-    [random "cure cancer" "stop the wars in the Middle East" "roll up into a
-    ball and cry"].
+    Hello, my name is Billy. I am [age] years old and I was born when [president_in_year 1999] was president. When I am president I am going to [random "cure cancer" "stop the wars in the Middle East" "roll up into a ball and cry"].
 
 If the `[age]` sub (a variable) evaluated to `13`, the `[president_in_year]`
 sub (a command) evaluated to "Bill Clinton", and the `[random]` sub (another
 command) evaluated (at least on one run) to `stop the wars in the Middle
 East`, then this text document would be rendered as:
 
-    Hello, my name is Billy. I am 13 years old and I was born when Bill
-    Clinton was president. When I am president I am going to stop the wars in
-    the Middle East.
+    Hello, my name is Billy. I am 13 years old and I was born when George W. Bush was president. When I am president I am going to stop the wars in the Middle East.
 
 "Okay, that's neat," you might be saying. "But we already have templating
 languages like the ones you just mentioned. What makes Papyrus so special?"
@@ -58,7 +60,8 @@ pretty cool things with them:
 Read the source, man! But seriously. I've tried to document a lot of the code
 because I think the whole thing is pretty neat. I used Rocco for the first time.
 It feels like you're reading a book, kind of. I think you'll like it.
-[Check it](http://mcmire.github.com/papyrus/doc/papyrus.html)
+Check it out: <http://mcmire.github.com/papyrus2/doc/papyrus.html>. (Note: I'm
+still working on this, excuse the dust)
 
 ## How did Papyrus come about?
 
