@@ -7,6 +7,9 @@ a much earlier version is available [here](http://github.com/mcmire/papyrus)). I
 am still in the process of changing some things, so I wouldn't use this for
 anything just yet.
 
+You can keep an eye on how I'm coming along with the public docs here:
+<http://mcmire.github.com/papyrus2/doc/papyrus.html>
+
 ---
 
 ## What is Papyrus?
