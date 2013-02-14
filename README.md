@@ -67,8 +67,8 @@ pretty cool things with them:
 Read the source, man! But seriously. I've tried to document a lot of the code
 because I think the whole thing is pretty neat. I used Rocco for the first time.
 It feels like you're reading a book, kind of. I think you'll like it.
-Check it out: <http://mcmire.github.com/papyrus2/doc/papyrus.html>. (Note: I'm
-still working on this, excuse the dust)
+Check it out: <http://mcmire.github.com/papyrus2/doc/papyrus.html>. **(Note: I'm
+still working on this, excuse the dust)**
 
 ## How did Papyrus come about?
 
@@ -97,9 +97,10 @@ unfortunately not actively working on this.
 ## I'm writing a blog engine, can I use Papyrus for it?
 
 Absolutely! I mean, even if I'm not working on it doesn't mean it doesn't work.
-Just run the tests if you don't believe me.
+Just run the tests if you don't believe me. **(Well, when I get them working
+again, that is.)**
 
-The real question is, will it meet your needs exactly. That, I'm not sure. I
+The real question is, will it meet your needs exactly? That, I'm not sure. I
 know that Papyrus isn't as pure conceptually as I'd like -- there were a few
 little changes we had to make for Codexed. I imagine there are probably things
 you want to do with it, and that's fine. I can answer any questions you have,
@@ -117,7 +118,7 @@ like Lisp and I don't think that's a coincidence.
 
 ## The rest
 
-Papyrus is (c) 2008-2012 Elliot Winkler <elliot.winkler@gmail.com>.
+Papyrus is (c) 2008-2013 Elliot Winkler (<elliot.winkler@gmail.com>).
 
 You are free to use any code here as you like, whether for commercial or
 personal purposes. I do not provide any warranty for damages caused by this
