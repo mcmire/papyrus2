@@ -33,14 +33,19 @@ way, the stuff inside a sub is just a series of words, or a series of groups of
 words, where the first word is special. You can group words together with
 quotes. So, with that in mind a typical Papyrus document might look like this:
 
-    Hello, my name is Billy. I am [age] years old and I was born when [president_in_year 1999] was president. When I am president I am going to [random "cure cancer" "stop the wars in the Middle East" "roll up into a ball and cry"].
+    Hello, my name is Billy. I am [age] years old and I was born when
+    [president_in_year 1999] was president. When I am president I am going to
+    [random "cure cancer" "stop the wars in the Middle East" "roll up into a
+    ball and cry"].
 
 If the `[age]` sub (a variable) evaluated to `13`, the `[president_in_year]`
 sub (a command) evaluated to "Bill Clinton", and the `[random]` sub (another
 command) evaluated (at least on one run) to `stop the wars in the Middle
 East`, then this text document would be rendered as:
 
-    Hello, my name is Billy. I am 13 years old and I was born when George W. Bush was president. When I am president I am going to stop the wars in the Middle East.
+    Hello, my name is Billy. I am 13 years old and I was born when George W.
+    Bush was president. When I am president I am going to stop the wars in the
+    Middle East.
 
 "Okay, that's neat," you might be saying. "But we already have templating
 languages like the ones you just mentioned. What makes Papyrus so special?"
