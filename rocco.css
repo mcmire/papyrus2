@@ -158,10 +158,10 @@ input, textarea, select {
   font-size: 100%; }
 
 input[type=text], input[type=password], textarea, select {
-  border-top: 1px solid #aaa;
-  border-left: 1px solid #aaa;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd; }
+  border-top: 1px solid #aaaaaa;
+  border-left: 1px solid #aaaaaa;
+  border-bottom: 1px solid #dddddd;
+  border-right: 1px solid #dddddd; }
 
 input[type='text'], input[type='password'] {
   cursor: text; }
@@ -223,10 +223,10 @@ h1, h2, h3, h4 {
   /*letter-spacing: -1px;*/ }
 
 h2 {
-  border-bottom: 2px solid #ddd; }
+  border-bottom: 2px solid #dddddd; }
 
 h3, h4 {
-  border-bottom: 1px solid #ddd; }
+  border-bottom: 1px solid #dddddd; }
 
 h2 {
   font-size: 21px;
@@ -268,8 +268,8 @@ ul {
 
 #nav-wrapper {
   background: white;
-  -webkit-box-shadow: 0 0 10px #777;
-  -moz-box-shadow: 0 0 10px #777;
+  -webkit-box-shadow: 0 0 10px #777777;
+  -moz-box-shadow: 0 0 10px #777777;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   font-size: 11px;
@@ -331,9 +331,9 @@ table td {
   table > tfoot .docs, table > tfoot .code {
     padding-bottom: 42px; }
   table > thead .docs, table > tbody > tr:nth-child(1) .docs, table > thead .code, table > tbody > tr:nth-child(1) .code {
-    background: -webkit-linear-gradient(#fdf6e3, white); }
+    /*background: -webkit-linear-gradient($solarized-base3, white);*/ }
   table > tbody > tr:nth-child(1) .docs, table > tbody > tr:nth-child(1) .code {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #dddddd;
     padding-bottom: 11px; }
   table > tbody > tr:nth-child(2) .docs, table > tbody > tr:nth-child(2) .code {
     padding-top: 21px; }
@@ -418,7 +418,7 @@ table td {
       position: relative;
       top: 3px; }
   .docs blockquote {
-    border-left: 2px solid #ddd;
+    border-left: 2px solid #dddddd;
     padding-left: 10px; }
 
 .pilcrow {
