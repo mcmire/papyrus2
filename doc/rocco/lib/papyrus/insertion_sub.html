@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>insertion_sub.rb</title>
+  <link rel="stylesheet" href="file:///Users/elliot/code/github/mine/papyrus2/doc/rocco/rocco.css">
+  <script src="file:///Users/elliot/code/github/mine/papyrus2/doc/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>insertion_sub.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>For most commands, the task of evaluation is simple: figure out how to
+turn oneself into a string and then return that string. For variables and the
+<code>[include]</code> built-in command, however, a bit more logic is required. These
+subs are special because they affect the parent document: upon being
+evaluated, they actually end up replacing themselves with their contents.
+This module provides this ability and is always mixed into a Sub of some kind.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">module</span> <span class="nn">InsertionSub</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class="docs">
+        <div>
+          <p>Given we are in the middle of evaluating a node list, and the loop is on a
+certain node, <strong>#parse_and_insert_into_parent</strong> takes some text, runs it
+through the parser to obtain another set of nodes, and then replaces the
+original node with this new set of nodes.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>content</code> &mdash; The String text that will be parsed. For a variable this
+is its raw value, for <code>[include]</code> this is the raw content of the
+referenced template.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">parse_and_insert_into_parent</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+      <span class="k">return</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">empty?</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3' data-parent-index="1">
+      <td class="docs">
+        <div>
+          <p>First, make a new Template that will house the <code>content</code> (using the same
+options that this Template was initialized with), and then run the
+<code>content</code> through the Parser to obtain a new Document (a tree of Nodes).</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">template</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">clone_with</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="p">{},</span> <span class="nb">self</span><span class="p">)</span>
+      <span class="n">document</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">analyze</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4' data-parent-index="1">
+      <td class="docs">
+        <div>
+          <p>Recall that this Sub has been asked to evaluate itself by the
+surrounding NodeList and is waiting for an answer. If there aren&#39;t any
+subs in the content, then the answer, the result of the evaluation, is
+the evaluation of the list of Nodes generated in the previous step.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="k">return</span> <span class="n">document</span><span class="o">.</span><span class="n">evaluate</span><span class="o">.</span><span class="n">join</span> <span class="k">if</span> <span class="n">document</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">all?</span> <span class="p">{</span><span class="o">|</span><span class="n">node</span><span class="o">|</span> <span class="no">Text</span> <span class="o">===</span> <span class="n">node</span> <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5' data-parent-index="1">
+      <td class="docs">
+        <div>
+          <p>If, however, there are subs, then we need to ask the surrounding
+NodeList to swap out this Sub with all of the Nodes from the previous
+step; from here the NodeList will resume evaluating itself <em>as though
+these Nodes were there all along, starting with the first Node</em>.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">klass</span> <span class="o">=</span> <span class="p">(</span><span class="no">Variable</span> <span class="o">===</span> <span class="nb">self</span> <span class="o">&amp;&amp;</span> <span class="nb">name</span> <span class="o">==</span> <span class="s2">&quot;body&quot;</span><span class="p">)</span> <span class="p">?</span> <span class="no">BodyNodeList</span> <span class="p">:</span> <span class="no">NodeList</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">expand_current</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">klass</span><span class="p">)</span>
+      <span class="k">raise</span> <span class="no">RedoEvaluation</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>

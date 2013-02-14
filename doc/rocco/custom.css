@@ -1,0 +1,28 @@
+.highlight .k {
+  color: #859900; }
+.highlight .kc {
+  font-weight: bold; }
+.highlight .kn {
+  color: #dc322f;
+  font-weight: bold; }
+.highlight .kt {
+  font-weight: bold; }
+.highlight .n {
+  color: #268bd2; }
+.highlight .nb {
+  color: #cb4b16; }
+.highlight .nc {
+  color: #cb4b16; }
+.highlight .nt {
+  font-weight: bold; }
+.highlight .l {
+  color: #2aa198; }
+.highlight .n {
+  font-weight: bold; }
+.highlight .ow {
+  color: #859900; }
+.highlight .c, .highlight .cm, .highlight .cp, .highlight .c1, .highlight .cs {
+  color: #93a1a1;
+  font-style: italic; }
+.highlight .g, .highlight .ge, .highlight .gr, .highlight .gi, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt {
+  color: #d33682; }

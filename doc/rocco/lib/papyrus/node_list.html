@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>node_list.rb</title>
+  <link rel="stylesheet" href="file:///Users/elliot/code/github/mine/papyrus2/doc/rocco/rocco.css">
+  <script src="file:///Users/elliot/code/github/mine/papyrus2/doc/rocco.js"></script>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="background">
+    <div class="docs"></div>
+  </div>
+
+  <div id="nav-wrapper">
+    <div id="nav">
+      Jump To &hellip;
+    </div>
+    <ul id="nav-links">
+        <li><a class="source" href="../papyrus.html">papyrus.rb</a></li>
+        <li><a class="source" href="block_command.html">block_command.rb</a></li>
+        <li><a class="source" href="body_node_list.html">body_node_list.rb</a></li>
+        <li><a class="source" href="body_string.html">body_string.rb</a></li>
+        <li><a class="source" href="command.html">command.rb</a></li>
+        <li><a class="source" href="commands.html">commands.rb</a></li>
+        <li><a class="source" href="commands/include.html">include.rb</a></li>
+        <li><a class="source" href="context_item.html">context_item.rb</a></li>
+        <li><a class="source" href="core_ext.html">core_ext.rb</a></li>
+        <li><a class="source" href="core_ext/hash_stringify_keys.html">hash_stringify_keys.rb</a></li>
+        <li><a class="source" href="core_ext/hash_symbolize_keys.html">hash_symbolize_keys.rb</a></li>
+        <li><a class="source" href="core_ext/string_scanner_eq.html">string_scanner_eq.rb</a></li>
+        <li><a class="source" href="custom_block_command.html">custom_block_command.rb</a></li>
+        <li><a class="source" href="custom_command_set.html">custom_command_set.rb</a></li>
+        <li><a class="source" href="document.html">document.rb</a></li>
+        <li><a class="source" href="errors.html">errors.rb</a></li>
+        <li><a class="source" href="inline_sub.html">inline_sub.rb</a></li>
+        <li><a class="source" href="insertion_sub.html">insertion_sub.rb</a></li>
+        <li><a class="source" href="lexicon.html">lexicon.rb</a></li>
+        <li><a class="source" href="node.html">node.rb</a></li>
+        <li><a class="source" href="node_list.html">node_list.rb</a></li>
+        <li><a class="source" href="null_object.html">null_object.rb</a></li>
+        <li><a class="source" href="parser.html">parser.rb</a></li>
+        <li><a class="source" href="paths.html">paths.rb</a></li>
+        <li><a class="source" href="separate_string.html">separate_string.rb</a></li>
+        <li><a class="source" href="sub.html">sub.rb</a></li>
+        <li><a class="source" href="template.html">template.rb</a></li>
+        <li><a class="source" href="text.html">text.rb</a></li>
+        <li><a class="source" href="token.html">token.rb</a></li>
+        <li><a class="source" href="token_list.html">token_list.rb</a></li>
+        <li><a class="source" href="tokenizer.html">tokenizer.rb</a></li>
+        <li><a class="source" href="variable.html">variable.rb</a></li>
+        <li><a class="source" href="version.html">version.rb</a></li>
+    </ul>
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th class="docs"><h1>node_list.rb</h1></th>
+      <th class="code"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class="docs">
+        <div>
+          <p>A NodeList is an Array-like object that serves as a container for Nodes.
+NodeLists are used to represent the entire object tree that the Parser
+produces (i.e. the Document), as well as argument lists to Commands. All Nodes
+within a NodeList point back to the NodeList as their <code>parent</code>. As it is a
+Node itself, a NodeList also has a <code>parent</code> and an #evaluate method; asking a
+NodeList to evaluate itself asks all Nodes therein to evaluate themselves.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre><span class="nb">require</span> <span class="s1">&#39;forwardable&#39;</span>
+
+<span class="k">module</span> <span class="nn">Papyrus</span>
+  <span class="k">class</span> <span class="nc">NodeList</span> <span class="o">&lt;</span> <span class="no">Node</span>
+    <span class="kp">extend</span> <span class="no">Forwardable</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList.new'>
+      <td class="docs">
+        <div>
+          <h4>NodeList.new</h4>
+
+<p>There are three ways to call this:</p>
+
+<ol>
+<li><p><code>NodeList.new</code> &mdash; Make an empty NodeList</p></li>
+<li><p><code>NodeList.new(another_list)</code> &mdash; Build a NodeList using an existing one</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>another_list</code> &mdash; A NodeList itself; all nodes therein will be used
+to populate this NodeList.</li>
+</ul></li>
+<li><p><code>NodeList.new(nodes)</code> &mdash; Build a NodeList from an existing list of
+Nodes</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>nodes</code> &mdash; An Array of Nodes to populate the NodeList with.</li>
+</ul></li>
+</ol>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+      <span class="vi">@nodes</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">first</span> <span class="o">||</span> <span class="o">[]</span>
+      <span class="vi">@nodes</span> <span class="o">=</span> <span class="vi">@nodes</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="vi">@nodes</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:nodes</span><span class="p">)</span>
+      <span class="vi">@nodes</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">node</span><span class="o">|</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">self</span> <span class="p">}</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#initialize_copy'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#initialize_copy</h4>
+
+<p>Called on #dup or #clone.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>list</code> &mdash; The original NodeList object that is being copied.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">initialize_copy</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+      <span class="vi">@nodes</span> <span class="o">=</span> <span class="vi">@nodes</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">node</span><span class="o">|</span>
+        <span class="n">node2</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">clone</span>
+        <span class="n">node2</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">self</span>
+        <span class="n">node2</span>
+      <span class="p">}</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Public_methods'>
+      <td class="docs">
+        <div>
+          <h2>Public methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#nodes'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#nodes</h4>
+
+<p>The Array of Node objects comprising the NodeList.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:nodes</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Node#orig_nodes'>
+      <td class="docs">
+        <div>
+          <h4>Node#orig_nodes</h4>
+
+<p>Evaluating the NodeList may manipulate it if one of the Nodes therein is
+an InsertionSub. <code>orig_nodes</code>, then, stores the version of this NodeList
+prior to evaluation.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="kp">attr_reader</span> <span class="ss">:orig_nodes</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class="docs">
+        <div>
+          <p>Since NodeList wraps an Array, it is useful to work with it as though it
+were an actual Array. We provide equivalents for the most common Array
+operations (or at least the ones we that the author is likely to want to
+use).</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="n">delegate</span> <span class="o">[</span>
+      <span class="ss">:length</span><span class="p">,</span> <span class="ss">:size</span><span class="p">,</span> <span class="ss">:first</span><span class="p">,</span> <span class="ss">:last</span><span class="p">,</span> <span class="ss">:empty?</span><span class="p">,</span> <span class="ss">:shift</span><span class="p">,</span> <span class="ss">:map</span><span class="p">,</span> <span class="ss">:map!</span><span class="p">,</span>
+      <span class="ss">:clear</span><span class="p">,</span> <span class="ss">:each</span><span class="p">,</span> <span class="ss">:include?</span><span class="p">,</span> <span class="ss">:delete</span><span class="p">,</span>
+    <span class="o">]</span> <span class="o">=&gt;</span> <span class="ss">:nodes</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#add'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#add</h4>
+
+<p>Adds a Node to the NodeList.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>node</code> &mdash; A Node object of any type.</li>
+</ul>
+
+<p>Raises a TypeError if <code>node</code> is not a Node.</p>
+
+<p>Returns this NodeList so you can chain calls.</p>
+
+<p><em>Aliased as:</em> NodeList#&lt;&lt;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+      <span class="k">return</span> <span class="k">unless</span> <span class="n">node</span>
+      <span class="k">unless</span> <span class="no">Node</span> <span class="o">===</span> <span class="n">node</span>
+        <span class="k">raise</span> <span class="no">TypeError</span><span class="p">,</span> <span class="s2">&quot;NodeList#add: Expected a Node, got a </span><span class="si">#{</span><span class="n">node</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> = </span><span class="si">#{</span><span class="n">node</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="k">end</span>
+      <span class="vi">@nodes</span> <span class="o">&lt;&lt;</span> <span class="n">node</span>
+      <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">self</span>
+      <span class="nb">self</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9' data-parent-index="7">
+      <td class="docs">
+        <div>
+          <p>For some reason we cannot use <code>alias_method</code> here and I cannot for the
+life of me remember why&hellip;</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">&lt;&lt;</span><span class="p">(</span><span class="n">node</span><span class="p">);</span> <span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">);</span> <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#evaluate'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#evaluate</h4>
+
+<p>Converts the NodeList to text form by asking all of the Nodes inside it to
+evaluate themselves.</p>
+
+<p>Usually returns an Array of Strings. In the case of BodyNodeList#evaluate,
+however, it returns an Array of BodyStrings. This is in order to
+facilitate post-processing of the body after it has been integrated
+into the root Document (as by this point BodyNodeList is no more).</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">evaluate</span>
+      <span class="n">arr</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">laststr</span> <span class="o">=</span> <span class="kp">nil</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11' data-parent-index="9">
+      <td class="docs">
+        <div>
+          <p>Evaluate all the Nodes, turning each one into a String, SeparateString,
+or BodyString.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">strings</span> <span class="o">=</span> <span class="n">_evaluated_nodes</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12' data-parent-index="9">
+      <td class="docs">
+        <div>
+          <p>Now process the resulting Array. All strings are concatenated together
+except for BodyStrings and SeparateStrings; we need to preserve and
+isolate these so that processing them later is possible. (BodyStrings
+are used when evaluating a Document to represent <code>[body]</code> content,
+SeparateStrings are used when evaluating a Command&#39;s argument list to
+represent the individual arguments.)</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="n">strings</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">str</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">empty?</span> <span class="o">||</span> <span class="no">SeparateString</span> <span class="o">===</span> <span class="n">str</span> <span class="o">||</span> <span class="no">SeparateString</span> <span class="o">===</span> <span class="n">laststr</span> <span class="o">||</span>
+           <span class="no">BodyString</span> <span class="o">===</span> <span class="n">str</span> <span class="o">||</span> <span class="no">BodyString</span> <span class="o">===</span> <span class="n">laststr</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-13' data-parent-index="9">
+      <td class="docs">
+        <div>
+          <p>Keep BodyStrings separate.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>          <span class="k">if</span> <span class="no">BodyString</span> <span class="o">===</span> <span class="n">str</span>
+            <span class="n">arr</span> <span class="o">&lt;&lt;</span> <span class="n">str</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14' data-parent-index="9">
+      <td class="docs">
+        <div>
+          <p>Keep SeparateStrings separate.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>          <span class="k">elsif</span> <span class="no">SeparateString</span> <span class="o">===</span> <span class="n">str</span>
+            <span class="n">arr</span> <span class="o">&lt;&lt;</span> <span class="nb">String</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">str</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-15' data-parent-index="9">
+      <td class="docs">
+        <div>
+          <p>A BodyNodeList stores a list of BodyStrings, not Strings.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>          <span class="k">elsif</span> <span class="no">BodyNodeList</span> <span class="o">===</span> <span class="nb">self</span>
+            <span class="n">arr</span> <span class="o">&lt;&lt;</span> <span class="no">BodyString</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+          <span class="k">else</span>
+            <span class="n">arr</span> <span class="o">&lt;&lt;</span> <span class="n">str</span>
+          <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16' data-parent-index="9">
+      <td class="docs">
+        <div>
+          <p>Combine Strings that appear in the NodeList successively.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>        <span class="k">else</span>
+          <span class="n">arr</span><span class="o">.</span><span class="n">last</span> <span class="o">&lt;&lt;</span> <span class="n">str</span>
+        <span class="k">end</span>
+        <span class="n">laststr</span> <span class="o">=</span> <span class="n">str</span>
+      <span class="k">end</span>
+      <span class="n">arr</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#to_a'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#to_a</h4>
+
+<p>Evaluates all the Nodes in the NodeList. This is a lower-level method than
+#evaluate, which will do some special logic to combine strings.</p>
+
+<p>Returns an Array of Strings.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">to_a</span>
+      <span class="n">_evaluated_nodes</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#expand_current'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#expand_current</h4>
+
+<p>Replaces a Sub inside of this NodeList with a set of different nodes,
+wrapped in their own NodeList. The Sub via the InsertionSub module will
+call this method as the NodeList is being iterated over.</p>
+
+<p>Note that this method destructively modifies the given Nodes by realigning
+their parent pointers. This is okay, since we are assuming that the Nodes
+came from a temporary Document object.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>nodes</code> &mdash; An Array of Nodes, or a NodeList.</li>
+<li><code>klass</code> &mdash; The NodeList class to use to wrap the <code>nodes</code> in. Usually
+this is NodeList, but <code>[body]</code> specially uses a BodyNodeList.</li>
+</ul>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">expand_current</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">klass</span><span class="p">)</span>
+      <span class="n">nodes</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">node</span><span class="o">|</span> <span class="n">node</span><span class="o">.</span><span class="n">old_parent</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="p">}</span>
+      <span class="n">list</span> <span class="o">=</span> <span class="n">klass</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+      <span class="n">list</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">self</span>
+      <span class="vi">@nodes</span><span class="o">[</span><span class="vi">@pos</span><span class="o">]</span> <span class="o">=</span> <span class="n">list</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#flatten'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#flatten</h4>
+
+<p>Collapses the NodeList, converting it from a multi-dimensional tree of
+Nodes to a one-dimensional list.</p>
+
+<p>Based off Rubinius code.</p>
+
+<p>Returns a new NodeList.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">flatten</span>
+      <span class="n">out</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">_recursively_flatten_to!</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+      <span class="n">list</span> <span class="o">=</span> <span class="no">NodeList</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+      <span class="n">list</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">parent</span>
+      <span class="n">list</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#=='>
+      <td class="docs">
+        <div>
+          <h4>NodeList#==</h4>
+
+<p>Compares this NodeList with another for equality. This method exists
+mainly for testing purposes.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>other</code> &mdash; Another NodeList.</li>
+</ul>
+
+<p>Returns true if <code>other</code> is a NodeList and has the same nodes as this
+NodeList.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+      <span class="n">other</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+      <span class="vi">@nodes</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">nodes</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Internal_methods'>
+      <td class="docs">
+        <div>
+          <h2>Internal methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#pretty_print_instance_variables'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#pretty_print_instance_variables</h4>
+
+<p>Controls which data to include in the PrettyPrint (pp) version of the
+object. Certain objects are rather verbose when pretty printed, so exclude
+these from the output.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">pretty_print_instance_variables</span>
+      <span class="sx">%w(@nodes)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Private_methods'>
+      <td class="docs">
+        <div>
+          <h2>Private methods</h2>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#_evaluated_nodes'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#_evaluated_nodes</h4>
+
+<p>Walks the tree of Nodes in the NodeList and recursively evaluates all of
+the Nodes inside (i.e., converts them all to Strings). A special case is
+made to prevent an infinite recursion when evaluating a Node which
+eventually includes itself in the result of its evaluation.</p>
+
+<p>Returns an Array of {String | SeparateString}.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_evaluated_nodes</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-25' data-parent-index="23">
+      <td class="docs">
+        <div>
+          <p>Back up the current list of Nodes in case we need it later, as some
+Nodes may get manipulated.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="vi">@orig_nodes</span> <span class="o">||=</span> <span class="vi">@nodes</span><span class="o">.</span><span class="n">clone</span>
+      <span class="n">arr</span> <span class="o">=</span> <span class="o">[]</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-26' data-parent-index="23">
+      <td class="docs">
+        <div>
+          <p>Keep track of which Node the iterator is on. This is used in
+#expand_current above to modify the NodeList during iteration.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>      <span class="vi">@pos</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="k">while</span> <span class="vi">@pos</span> <span class="o">&lt;</span> <span class="vi">@nodes</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="vi">@nodes</span><span class="o">[</span><span class="vi">@pos</span><span class="o">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kp">nil</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-27' data-parent-index="23">
+      <td class="docs">
+        <div>
+          <blockquote>
+<p><strong>2015 JENNIFER:</strong> &ldquo;I&#39;m young!&rdquo;</p>
+
+<p><strong>1985 JENNIFER (simultaneously):</strong> &ldquo;I&#39;m old!&rdquo;</p>
+
+<p>&mdash; <em>Back to the Future, Part II</em></p>
+</blockquote>
+
+<p>Some Nodes actually evaluate to themselves. An example would be a
+variable <code>[great]</code> that has the value of <code>This is a [great] day</code>.
+If unchecked, evaluating these kinds of Nodes would naturally lead to
+a never-ending loop (<code>[great]</code> would resolve to <code>This is a [great]
+day</code>, which would resolve to <code>This is a This is a [great] day day</code>,
+which would resolve to&hellip;). We have to stop somewhere, and so we
+have made a conscious choice in Papyrus to only resolve the first
+level. Hence, in our example, <code>This is a [great] day</code> would be the
+final string &mdash; once Papyrus sees the inner <code>[great]</code>, it notices that
+it&#39;s the same as the outer instance, and decides not to evaluate
+further.</p>
+
+<p>This is where we do that. A Node that is an exact copy of a Node in a
+higher level in the tree is called the &ldquo;insertion doppelganger&rdquo; of
+that Node. When this kind of Node is evaluated, the result is the raw
+representation of that node &mdash; in other words, how it originally
+looked in the source document.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:insertion_doppelganger</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+           <span class="n">node</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">insertion_doppelganger</span><span class="p">)</span>
+          <span class="n">result</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">insertion_doppelganger</span><span class="o">.</span><span class="n">raw_sub</span>
+        <span class="k">else</span>
+          <span class="k">begin</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">evaluate</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-28' data-parent-index="23">
+      <td class="docs">
+        <div>
+          <p>If an InsertionSub which is not detected to be an insertion
+doppelganger of an ancestor node is evaluated, and it replaces
+itself with a NodeList, then we need to evaluate that NodeList
+instead of continuing on to the next Node in this NodeList. The
+RedoEvaluation, albeit crudely, accomplishes this.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>          <span class="k">rescue</span> <span class="no">RedoEvaluation</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">raise</span> <span class="s2">&quot;Infinite loop&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">50</span>
+            <span class="k">next</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">nil?</span>
+          <span class="k">raise</span> <span class="s2">&quot;A node evaluates to nil!</span><span class="se">\n</span><span class="si">#{</span><span class="n">node</span><span class="o">.</span><span class="n">pretty_inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">end</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-29' data-parent-index="23">
+      <td class="docs">
+        <div>
+          <p>NodeLists will evaluate to Arrays, everything else will evaluate to
+Strings.</p>
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>        <span class="k">if</span> <span class="nb">Array</span> <span class="o">===</span> <span class="n">result</span>
+          <span class="n">arr</span> <span class="o">+=</span> <span class="n">result</span>
+        <span class="k">else</span>
+          <span class="n">arr</span> <span class="o">&lt;&lt;</span> <span class="n">result</span>
+        <span class="k">end</span>
+        <span class="vi">@pos</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="k">end</span>
+      <span class="n">arr</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-NodeList#_recursively_flatten_to!'>
+      <td class="docs">
+        <div>
+          <h4>NodeList#_recursively_flatten_to!</h4>
+
+<p>The recursive counterpart to #flatten. It walks the given array, dumping
+all of the non-array items into a flat array.</p>
+
+<p><span class="args">Arguments:</span></p>
+
+<ul>
+<li><code>array</code> &mdash; A NodeList or Array which will be walked.</li>
+<li><code>out</code>   &mdash; A final Array into which all of the Nodes will be placed.</li>
+</ul>
+
+<p>Returns nothing.</p>
+
+        </div>
+      </td>
+      <td class="code">
+        <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_recursively_flatten_to!</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+      <span class="n">array</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">o</span><span class="o">|</span>
+        <span class="k">if</span> <span class="no">NodeList</span> <span class="o">===</span> <span class="n">o</span>
+          <span class="n">_recursively_flatten_to!</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="k">elsif</span> <span class="n">o</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:to_ary</span><span class="p">)</span>
+          <span class="n">ary</span> <span class="o">=</span> <span class="nb">Array</span> <span class="o">===</span> <span class="n">o</span> <span class="p">?</span> <span class="n">o</span> <span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">to_ary</span>
+          <span class="n">_recursively_flatten_to!</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="k">else</span>
+          <span class="n">out</span> <span class="o">&lt;&lt;</span> <span class="n">o</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div></pre></div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <th class="docs"></th>
+    <th class="code"></th>
+  </tfoot>
+  </table>
+</div>
+
+</body>
+</html>
