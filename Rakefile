@@ -55,6 +55,16 @@ namespace :docs do
     Dir[File.join('lib/**/*.rb')]
   end
 
+  def checkout(path, *args)
+    opts = (Hash === args.last ? args.pop : {})
+    target = args.shift
+    system("git checkout master -- #{path}")
+    system("git rm --cached -r #{path}")
+    if target
+      FileUtils.mv(path, target)
+    end
+  end
+
   task "Clean up doc generation"
   task :clean do
     FileUtils.rm_rf('lib')
@@ -63,7 +73,10 @@ namespace :docs do
 
   task "Generate the docs for publishing to GitHub Pages"
   task :generate => :clean do
-    system('git checkout master -- lib && git rm --cached -r lib')
+    checkout('lib')
+    checkout('doc/rocco.mustache', 'support/rocco.mustache')
+    checkout('doc/rocco.js', 'rocco.js')
+    checkout('doc/rocco/rocco.css', 'rocco.css')
     all_paths.each {|path| build(path) }
     system('git add doc')
   end
